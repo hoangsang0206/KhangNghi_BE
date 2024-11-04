@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\KhangNghi_BE.Data\KhangNghi_BE.Data.csproj" />
+  </ItemGroup>
+
 </Project>
