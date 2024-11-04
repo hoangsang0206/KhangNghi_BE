@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace KhangNghi_BE.Data.Models;
 
@@ -17,5 +18,8 @@ public partial class RefreshToken
 
     public bool? IsUsed { get; set; }
 
+    public bool? IsRevoked { get; set; }
+
+    [JsonIgnore]
     public virtual User User { get; set; } = null!;
 }

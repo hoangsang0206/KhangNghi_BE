@@ -90,11 +90,7 @@ public partial class KhangNghiContext : DbContext
     public virtual DbSet<Warehouse> Warehouses { get; set; }
 
     public virtual DbSet<WorkSchedule> WorkSchedules { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=AORUS-Laptop;Database=KhangNghi;User Id=sang;Password=123456;TrustServerCertificate=True");
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Address>(entity =>
@@ -630,21 +626,21 @@ public partial class KhangNghiContext : DbContext
 
         modelBuilder.Entity<RefreshToken>(entity =>
         {
-            entity.HasNoKey();
+            entity.HasKey(e => new { e.UserId, e.JwtId }).HasName("PK__RefreshT__24A725C6552FD809");
 
-            entity.Property(e => e.CreateAt).HasColumnType("datetime");
-            entity.Property(e => e.ExpireAt).HasColumnType("datetime");
-            entity.Property(e => e.JwtId)
-                .HasMaxLength(200)
-                .IsUnicode(false);
             entity.Property(e => e.UserId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.JwtId)
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(e => e.CreateAt).HasColumnType("datetime");
+            entity.Property(e => e.ExpireAt).HasColumnType("datetime");
 
-            entity.HasOne(d => d.User).WithMany()
+            entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__RefreshTo__UserI__078C1F06");
+                .HasConstraintName("FK__RefreshTo__UserI__1B9317B3");
         });
 
         modelBuilder.Entity<Role>(entity =>

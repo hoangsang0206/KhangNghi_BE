@@ -29,7 +29,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddDbContext<KhangNghiContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString"));
+    options.UseSqlServer(builder.Configuration.GetSection("ConnectionString").Value);
 });
 
 builder.Services.AddScoped<IAccountService, AccountService>();
