@@ -262,6 +262,7 @@ public class AccountController : ControllerBase
         if (_secretKey != null)
         {
             byte[] key = Encoding.UTF8.GetBytes(_secretKey);
+            string tokenId = Guid.NewGuid().ToString());
             SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
@@ -270,7 +271,7 @@ public class AccountController : ControllerBase
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim(ClaimTypes.Role, user.RoleId),
                     new Claim(ClaimTypes.Email, user.Email ?? ""),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    new Claim(JwtRegisteredClaimNames.Jti, tokenId
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -280,7 +281,7 @@ public class AccountController : ControllerBase
             string refreshToken = GenerateRefreshToken();
             Token token = new Token
             {
-                TokenId = Guid.NewGuid().ToString(),
+                TokenId = tokenId,
                 AccessToken = accessToken,
                 RefreshToken = refreshToken
             };
@@ -302,4 +303,4 @@ public class AccountController : ControllerBase
             return Convert.ToBase64String(bytes);
         }
     }
-}
+}      
