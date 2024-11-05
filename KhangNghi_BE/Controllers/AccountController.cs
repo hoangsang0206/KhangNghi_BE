@@ -110,7 +110,7 @@ public class AccountController : ControllerBase
 
 
     [HttpPost("renew-token")]
-    public async Task<IActionResult> RenewToken(string accessToken, string refreshToken)
+    public async Task<IActionResult> RenewToken([FromBody] RenewToken rToken)
     {
         try
         {
@@ -127,7 +127,7 @@ public class AccountController : ControllerBase
                 ValidateLifetime = false
             };
 
-            var tokenVerification = handler.ValidateToken(accessToken, tokenValidateParams, out SecurityToken validatedToken);
+            var tokenVerification = handler.ValidateToken(rToken.AccessToken, tokenValidateParams, out SecurityToken validatedToken);
 
             if (validatedToken is JwtSecurityToken jwtSecurityToken)
             {
@@ -155,7 +155,7 @@ public class AccountController : ControllerBase
             }
 
 
-            RefreshToken? token = await _accountService.GetRefreshTokenAsync(refreshToken);
+            RefreshToken? token = await _accountService.GetRefreshTokenAsync(rToken.RefreshToken);
 
             if (token == null)
             {
@@ -203,7 +203,7 @@ public class AccountController : ControllerBase
                 });
             }
 
-            await _accountService.UpdateRefreshTokenAsync(refreshToken);
+            await _accountService.UpdateRefreshTokenAsync(rToken.RefreshToken);
             User? user = await _accountService.GetUserAsync(token.UserId);
 
             return Ok(new ApiReponse
@@ -273,7 +273,7 @@ public class AccountController : ControllerBase
                     new Claim(ClaimTypes.Email, user.Email ?? ""),
                     new Claim(JwtRegisteredClaimNames.Jti, tokenId)
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(30),
+                Expires = DateTime.UtcNow.AddMinutes(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
