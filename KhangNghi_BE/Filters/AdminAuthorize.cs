@@ -1,5 +1,4 @@
-﻿using KhangNghi_BE.Data.Models;
-using KhangNghi_BE.Services;
+﻿using KhangNghi_BE.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
@@ -8,14 +7,7 @@ namespace KhangNghi_BE.Filters
 {
     public class AdminAuthorize : Attribute, IAuthorizationFilter
     {
-        private readonly IAuthorizationService _authorizeService;
-
         public string Code { get; set; } = "";
-
-        public AdminAuthorize(IAuthorizationService authorizeService)
-        {
-            _authorizeService = authorizeService;
-        }
 
         public async void OnAuthorization(AuthorizationFilterContext context)
         {
@@ -32,6 +24,9 @@ namespace KhangNghi_BE.Filters
                 context.Result = new UnauthorizedResult();
                 return;
             }
+
+            IAuthorizationService _authorizeService = context.HttpContext.RequestServices
+                .GetRequiredService<IAuthorizationService>();
 
             if(!await _authorizeService.CheckPermissionAsync(userId, Code))
             {

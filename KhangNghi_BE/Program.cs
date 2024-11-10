@@ -33,8 +33,10 @@ builder.Services.AddDbContext<KhangNghiContext>(options =>
 });
 
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
 builder.Services.AddScoped<ICatalogService, CatalogService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IServiceCatalogService, ServiceCalalogService>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 
 var app = builder.Build();

@@ -15,6 +15,7 @@ namespace KhangNghi_BE.Services.Services
         public async Task<bool> CheckPermissionAsync(string userId, string funcCode)
         {
             User? user = await _context.Users
+                .AsNoTracking()
                 .Include(u => u.Group)
                 .ThenInclude(g => g.FunctionAuthorizations)
                 .FirstOrDefaultAsync(u => u.UserId == userId);
@@ -24,9 +25,16 @@ namespace KhangNghi_BE.Services.Services
                 return false;
             }
 
+            if(user.Group?.HasAllPermission == true)
+            {
+                return true;
+            }
+
             bool isAuthorized = user.Group?.FunctionAuthorizations
                 .Any(fa => fa.FunctionId == funcCode && fa.IsAuthorized == true) 
                 ?? false;
+
+            return isAuthorized;
         }
     }
 }
