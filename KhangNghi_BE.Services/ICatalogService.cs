@@ -9,8 +9,8 @@ namespace KhangNghi_BE.Services
         Task<IEnumerable<ProductCatalog>> GetProductCatalogAsync(string productId);
         Task<ProductCatalog?> GetByIdAsync(string catalogId);
 
-        Task<ProductCatalog> CreateAsync(CatalogVM catalog);
-        Task<ProductCatalog?> UpdateAsync(CatalogVM catalog);
+        Task<bool> CreateAsync(CatalogVM catalog);
+        Task<bool> UpdateAsync(CatalogVM catalog);
         Task<bool> DeleteAsync(string catalogId);
     }
 }

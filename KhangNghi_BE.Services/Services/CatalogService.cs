@@ -28,7 +28,7 @@ namespace KhangNghi_BE.Services.Services
                 .FirstOrDefaultAsync(c => c.CatalogId == catalogId);
         }
 
-        public async Task<ProductCatalog> CreateAsync(CatalogVM catalog)
+        public async Task<bool> CreateAsync(CatalogVM catalog)
         {
             ProductCatalog newCatalog = new ProductCatalog
             {
@@ -37,25 +37,19 @@ namespace KhangNghi_BE.Services.Services
             };
 
             _context.ProductCatalogs.Add(newCatalog);
-            await _context.SaveChangesAsync();
-            return newCatalog;
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<ProductCatalog?> UpdateAsync(CatalogVM catalog)
+        public async Task<bool> UpdateAsync(CatalogVM catalog)
         {
             ProductCatalog? oldCatalog = await GetByIdAsync(catalog.CatalogId);
             if (oldCatalog == null)
             {
-                return null;
+                return false;
             }
 
             oldCatalog.CatalogName = catalog.CatalogName;
-            if(await _context.SaveChangesAsync() > 0)
-            {
-                return oldCatalog;
-            }
-
-            return null;
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeleteAsync(string catalogId)

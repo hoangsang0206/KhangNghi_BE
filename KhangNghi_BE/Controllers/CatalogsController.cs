@@ -3,6 +3,7 @@ using KhangNghi_BE.Data.ViewModels;
 using KhangNghi_BE.Services;
 using KhangNghi_BE.Filters;
 using Microsoft.AspNetCore.Mvc;
+using KhangNghi_BE.Contants;
 
 namespace KhangNghi_BE.Controllers
 {
@@ -44,7 +45,7 @@ namespace KhangNghi_BE.Controllers
         #region Authorized
 
         [HttpPost("create")]
-        [AdminAuthorize(Code = "create-catalog")]
+        [AdminAuthorize(Code = Functions.CreateCatalog)]
         public async Task<IActionResult> CreateCatalog([FromBody] CatalogVM catalog)
         {
             if (!ModelState.IsValid)
@@ -67,16 +68,24 @@ namespace KhangNghi_BE.Controllers
                 });
             }
 
-            ProductCatalog newCatalog = await _catalogService.CreateAsync(catalog);
-            return Ok(new ApiResponse
+            bool result = await _catalogService.CreateAsync(catalog);
+            ApiResponse response = new ApiResponse
             {
-                Success = true,
-                Data = newCatalog
-            });
+                Success = result,
+                Message = result ? "Tạo mới thành công" : "Tạo mới thất bại",
+                Data = result ? await _catalogService.GetByIdAsync(catalog.CatalogId) : null
+            };
+
+            if(result)
+            {
+                return Ok(response);
+            }
+
+            return BadRequest(response);
         }
 
         [HttpPut("update")]
-        [AdminAuthorize(Code = "update-catalog")]
+        [AdminAuthorize(Code = Functions.UpdateCatalog)]
         public async Task<IActionResult> UpdateCatalog(CatalogVM catalog)
         {
             if (!ModelState.IsValid)
@@ -89,26 +98,25 @@ namespace KhangNghi_BE.Controllers
                 });
             }
 
-            ProductCatalog? updatedCatalog = await _catalogService.UpdateAsync(catalog);
-            if(updatedCatalog == null)
+            bool result = await _catalogService.UpdateAsync(catalog);
+
+            ApiResponse response = new ApiResponse
             {
-                return BadRequest(new ApiResponse
-                {
-                    Success = false,
-                    Message = "Danh mục không tồn tại"
-                });
+                Success = result,
+                Message = result ? "Cập nhật thành công" : "Cập nhật thất bại",
+                Data = result ? await _catalogService.GetByIdAsync(catalog.CatalogId) : null
+            };
+
+            if (result)
+            {
+                return Ok(response);
             }
 
-            return Ok(new ApiResponse
-            {
-                Success = true,
-                Message = "Cập nhật thành công",
-                Data = updatedCatalog
-            });
+            return BadRequest(response);
         }
 
         [HttpDelete("delete/{catalogId}")]
-        [AdminAuthorize(Code = "delete-catalog")]
+        [AdminAuthorize(Code = Functions.DeleteCatalog)]
         public async Task<IActionResult> DeleteCatalog(string catalogId)
         {
             ProductCatalog? catalog = await _catalogService.GetByIdAsync(catalogId);

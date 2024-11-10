@@ -91,10 +91,6 @@ public partial class KhangNghiContext : DbContext
 
     public virtual DbSet<WorkSchedule> WorkSchedules { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=AORUS-Laptop;Database=KhangNghi;User Id=sang;Password=123456;TrustServerCertificate=True;");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Address>(entity =>
@@ -482,15 +478,13 @@ public partial class KhangNghiContext : DbContext
                     "ProductCategory",
                     r => r.HasOne<ProductCatalog>().WithMany()
                         .HasForeignKey("CatalogId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__ProductCa__Catal__5629CD9C"),
+                        .HasConstraintName("FK__ProductCa__Catal__59904A2C"),
                     l => l.HasOne<Product>().WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__ProductCa__Produ__5535A963"),
+                        .HasConstraintName("FK__ProductCa__Produ__589C25F3"),
                     j =>
                     {
-                        j.HasKey("ProductId", "CatalogId").HasName("PK__ProductC__2829D57B75D4EBE7");
+                        j.HasKey("ProductId", "CatalogId").HasName("PK__ProductC__2829D57BEB9B31FB");
                         j.ToTable("ProductCategories");
                         j.IndexerProperty<string>("ProductId")
                             .HasMaxLength(50)
@@ -582,15 +576,13 @@ public partial class KhangNghiContext : DbContext
                     "PromotionProduct",
                     r => r.HasOne<Product>().WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__Promotion__Produ__42ACE4D4"),
+                        .HasConstraintName("FK__Promotion__Produ__55BFB948"),
                     l => l.HasOne<Promotion>().WithMany()
                         .HasForeignKey("PromotionId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__Promotion__Promo__41B8C09B"),
+                        .HasConstraintName("FK__Promotion__Promo__54CB950F"),
                     j =>
                     {
-                        j.HasKey("PromotionId", "ProductId").HasName("PK__Promotio__9984E3A3B2F3FF81");
+                        j.HasKey("PromotionId", "ProductId").HasName("PK__Promotio__9984E3A38D5F4D06");
                         j.ToTable("PromotionProducts");
                         j.IndexerProperty<string>("PromotionId")
                             .HasMaxLength(50)

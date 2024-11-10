@@ -9,7 +9,7 @@ namespace KhangNghi_BE.Filters
     {
         public string Code { get; set; } = "";
 
-        public async void OnAuthorization(AuthorizationFilterContext context)
+        public void OnAuthorization(AuthorizationFilterContext context)
         {
             if (!context.HttpContext.User.IsInRole("admin"))
             {
@@ -28,7 +28,7 @@ namespace KhangNghi_BE.Filters
             IAuthorizationService _authorizeService = context.HttpContext.RequestServices
                 .GetRequiredService<IAuthorizationService>();
 
-            if(!await _authorizeService.CheckPermissionAsync(userId, Code))
+            if(!_authorizeService.CheckPermissionAsync(userId, Code).Result)
             {
                 context.Result = new UnauthorizedResult();
             }

@@ -5,7 +5,9 @@ namespace KhangNghi_BE.Data.ViewModels;
 public class Register
 {
     [Required(ErrorMessage = "Tên đăng nhập không để trống")]
-    [MaxLength(30, ErrorMessage = "Tên đăng nhập không quá 30 ký tự")] 
+    [MaxLength(30, ErrorMessage = "Tên đăng nhập không quá 30 ký tự")]
+    [RegularExpression(@"^[a-zA-Z0-9-_]*$",
+            ErrorMessage = "Tên đăng nhập không chứa kí tự đặc biệt (ngoại trừ -, _) và khoảng trống")]
     public string Username { get; set; } = null!;
     
     [Required(ErrorMessage = "Email không để trống")]

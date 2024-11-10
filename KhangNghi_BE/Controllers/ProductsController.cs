@@ -1,6 +1,9 @@
-﻿using KhangNghi_BE.Data.Models;
+﻿using KhangNghi_BE.Contants;
+using KhangNghi_BE.Data.Models;
 using KhangNghi_BE.Data.ViewModels;
+using KhangNghi_BE.Filters;
 using KhangNghi_BE.Services;
+using KhangNghi_BE.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KhangNghi_BE.Controllers
@@ -11,6 +14,9 @@ namespace KhangNghi_BE.Controllers
     {
         private readonly IProductService _productService;
         private readonly int _pageSize = 30;
+        private readonly string[] _allowedExtension = { ".jpg", ".jpeg", ".png", ".webp" };
+        private readonly string _rootFolder = "Files";
+        private readonly string _imageFolder = "Images";
 
         public ProductsController(IProductService productService)
         {
@@ -84,5 +90,118 @@ namespace KhangNghi_BE.Controllers
                 Data = product
             });
         }
+
+        #region Authorized
+
+        [HttpPost("create")]
+        [AdminAuthorize(Code = Functions.CreateProduct)]
+        public async Task<IActionResult> CreateProduct([FromForm] ProductVM product, List<IFormFile>? images)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Dữ liệu không hợp lệ",
+                    Data = ModelState
+                });
+            }
+
+            Product? existedProduct = await _productService.GetByIdAsync(product.ProductId);
+            if(existedProduct != null)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Sản phẩm đã tồn tại"
+                });
+            }
+
+            if (images != null)
+            {
+                string uploadPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), _rootFolder, _imageFolder));
+                foreach (IFormFile image in images)
+                {
+                    string fileName = product.ProductId + "-" 
+                        + Guid.NewGuid().ToString() 
+                        + Path.GetExtension(image.FileName);
+
+                    bool fileResult = await FileUtils.UploadFileAsync(image, uploadPath, fileName);
+                    if(fileResult)
+                    {
+                        product.Images.Add(new ProductVM.ProductImage
+                        {
+                            ImageUrl = $"/Files/Images/{fileName}"
+                        });
+                    }
+                }
+            }
+
+            bool result = await _productService.CreateAsync(product);
+
+            ApiResponse response = new ApiResponse
+            {
+                Success = result,
+                Message = result ? "Tạo sản phẩm thành công" : "Tạo sản phẩm thất bại",
+                Data = result ? await _productService.GetByIdAsync(product.ProductId) : null
+            };
+
+            if(result)
+            {
+                return Ok(response);
+            }
+
+            foreach(var image in product.Images)
+            {
+                if(image.ImageUrl != null)
+                {
+                    string fileName = image.ImageUrl.Replace("/Files/Images/", string.Empty);
+                    string path = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), _rootFolder, _imageFolder, fileName));
+                    FileUtils.DeleteFile(path);
+                }
+            }
+            return BadRequest(response);
+        }
+
+        [HttpDelete("delete/{productId}")]
+        [AdminAuthorize(Code = Functions.DeleteProduct)]
+        public async Task<IActionResult> DeleteProduct(string productId)
+        {
+            Product? product = await _productService.GetByIdAsync(productId);
+            if(product == null)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Sản phẩm không tồn tại"
+                });
+            }
+
+            bool result = await _productService.DeleteAsync(productId);
+
+            ApiResponse response = new ApiResponse
+            {
+                Success = result,
+                Message = result ? "Xóa sản phẩm thành công" : "Xóa sản phẩm thất bại"
+            };
+
+            if(result)
+            {
+                foreach (var image in product.ProductImages)
+                {
+                    if(image.ImageUrl != null)
+                    {
+                        string fileName = image.ImageUrl.Replace("/Files/Images/", string.Empty);
+                        string path = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), _rootFolder, _imageFolder, fileName));
+                        FileUtils.DeleteFile(path);
+                    }
+                }
+                return Ok(response);
+            }
+
+            return BadRequest(response);
+        }
+
+        #endregion
     }
 }
