@@ -20,4 +20,8 @@ public partial class Service
     public string? CatalogId { get; set; }
 
     public virtual ServiceCatalog? Catalog { get; set; }
+
+    public virtual ICollection<ContractDetail> ContractDetails { get; set; } = new List<ContractDetail>();
+
+    public virtual ICollection<ServiceImage> ServiceImages { get; set; } = new List<ServiceImage>();
 }

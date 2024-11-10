@@ -1,6 +1,6 @@
 namespace KhangNghi_BE.Data.ViewModels;
 
-public class ApiReponse
+public class ApiResponse
 {
     public bool Success { get; set; }
     public string? Message { get; set; }

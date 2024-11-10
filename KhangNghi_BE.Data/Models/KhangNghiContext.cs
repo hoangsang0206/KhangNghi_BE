@@ -59,8 +59,6 @@ public partial class KhangNghiContext : DbContext
 
     public virtual DbSet<Promotion> Promotions { get; set; }
 
-    public virtual DbSet<PromotionProduct> PromotionProducts { get; set; }
-
     public virtual DbSet<PromotionUsage> PromotionUsages { get; set; }
 
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -70,6 +68,8 @@ public partial class KhangNghiContext : DbContext
     public virtual DbSet<Service> Services { get; set; }
 
     public virtual DbSet<ServiceCatalog> ServiceCatalogs { get; set; }
+
+    public virtual DbSet<ServiceImage> ServiceImages { get; set; }
 
     public virtual DbSet<Shift> Shifts { get; set; }
 
@@ -90,7 +90,11 @@ public partial class KhangNghiContext : DbContext
     public virtual DbSet<Warehouse> Warehouses { get; set; }
 
     public virtual DbSet<WorkSchedule> WorkSchedules { get; set; }
-    
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=AORUS-Laptop;Database=KhangNghi;User Id=sang;Password=123456;TrustServerCertificate=True;");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Address>(entity =>
@@ -194,7 +198,7 @@ public partial class KhangNghiContext : DbContext
 
         modelBuilder.Entity<ContractDetail>(entity =>
         {
-            entity.HasNoKey();
+            entity.HasKey(e => new { e.ContractId, e.ProductId, e.ServiceId }).HasName("PK__Contract__0988E3B524403C5A");
 
             entity.Property(e => e.ContractId)
                 .HasMaxLength(50)
@@ -207,18 +211,20 @@ public partial class KhangNghiContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.UnitPrice).HasColumnType("decimal(18, 0)");
 
-            entity.HasOne(d => d.Contract).WithMany()
+            entity.HasOne(d => d.Contract).WithMany(p => p.ContractDetails)
                 .HasForeignKey(d => d.ContractId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ContractD__Contr__04E4BC85");
+                .HasConstraintName("FK__ContractD__Contr__4589517F");
 
-            entity.HasOne(d => d.Product).WithMany()
+            entity.HasOne(d => d.Product).WithMany(p => p.ContractDetails)
                 .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("FK__ContractD__Produ__05D8E0BE");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ContractD__Produ__467D75B8");
 
-            entity.HasOne(d => d.Service).WithMany()
+            entity.HasOne(d => d.Service).WithMany(p => p.ContractDetails)
                 .HasForeignKey(d => d.ServiceId)
-                .HasConstraintName("FK__ContractD__Servi__06CD04F7");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ContractD__Servi__477199F1");
         });
 
         modelBuilder.Entity<Customer>(entity =>
@@ -570,28 +576,29 @@ public partial class KhangNghiContext : DbContext
             entity.Property(e => e.MaxDiscountAmount).HasColumnType("decimal(18, 0)");
             entity.Property(e => e.PromotionName).HasMaxLength(150);
             entity.Property(e => e.PromotionType).HasMaxLength(100);
-        });
 
-        modelBuilder.Entity<PromotionProduct>(entity =>
-        {
-            entity.HasNoKey();
-
-            entity.Property(e => e.ProductId)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.PromotionId)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-
-            entity.HasOne(d => d.Product).WithMany()
-                .HasForeignKey(d => d.ProductId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Promotion__Produ__6D0D32F4");
-
-            entity.HasOne(d => d.Promotion).WithMany()
-                .HasForeignKey(d => d.PromotionId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Promotion__Promo__6C190EBB");
+            entity.HasMany(d => d.Products).WithMany(p => p.Promotions)
+                .UsingEntity<Dictionary<string, object>>(
+                    "PromotionProduct",
+                    r => r.HasOne<Product>().WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__Promotion__Produ__42ACE4D4"),
+                    l => l.HasOne<Promotion>().WithMany()
+                        .HasForeignKey("PromotionId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__Promotion__Promo__41B8C09B"),
+                    j =>
+                    {
+                        j.HasKey("PromotionId", "ProductId").HasName("PK__Promotio__9984E3A3B2F3FF81");
+                        j.ToTable("PromotionProducts");
+                        j.IndexerProperty<string>("PromotionId")
+                            .HasMaxLength(50)
+                            .IsUnicode(false);
+                        j.IndexerProperty<string>("ProductId")
+                            .HasMaxLength(50)
+                            .IsUnicode(false);
+                    });
         });
 
         modelBuilder.Entity<PromotionUsage>(entity =>
@@ -680,6 +687,20 @@ public partial class KhangNghiContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.CatalogName).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<ServiceImage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__ServiceI__3214EC0707080644");
+
+            entity.Property(e => e.ServiceId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Service).WithMany(p => p.ServiceImages)
+                .HasForeignKey(d => d.ServiceId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ServiceIm__Servi__2EA5EC27");
         });
 
         modelBuilder.Entity<Shift>(entity =>
@@ -816,6 +837,8 @@ public partial class KhangNghiContext : DbContext
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C0790C433");
+
+            entity.HasIndex(e => e.Username, "UQ__Users__536C85E493D675E7").IsUnique();
 
             entity.Property(e => e.UserId)
                 .HasMaxLength(50)

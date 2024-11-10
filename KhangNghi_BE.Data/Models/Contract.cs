@@ -21,6 +21,8 @@ public partial class Contract
 
     public virtual ContractCategory? Category { get; set; }
 
+    public virtual ICollection<ContractDetail> ContractDetails { get; set; } = new List<ContractDetail>();
+
     public virtual Customer Customer { get; set; } = null!;
 
     public virtual Invoice? Invoice { get; set; }

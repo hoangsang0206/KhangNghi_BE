@@ -7,9 +7,9 @@ public partial class ContractDetail
 {
     public string ContractId { get; set; } = null!;
 
-    public string? ProductId { get; set; }
+    public string ProductId { get; set; } = null!;
 
-    public string? ServiceId { get; set; }
+    public string ServiceId { get; set; } = null!;
 
     public int Quantity { get; set; }
 
@@ -17,7 +17,7 @@ public partial class ContractDetail
 
     public virtual Contract Contract { get; set; } = null!;
 
-    public virtual Product? Product { get; set; }
+    public virtual Product Product { get; set; } = null!;
 
-    public virtual Service? Service { get; set; }
+    public virtual Service Service { get; set; } = null!;
 }

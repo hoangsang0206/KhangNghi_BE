@@ -22,4 +22,6 @@ public partial class Promotion
     public bool IsActive { get; set; }
 
     public virtual ICollection<PromotionUsage> PromotionUsages { get; set; } = new List<PromotionUsage>();
+
+    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 }

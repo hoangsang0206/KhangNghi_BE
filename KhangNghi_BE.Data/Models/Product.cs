@@ -25,6 +25,8 @@ public partial class Product
 
     public bool? IsActive { get; set; }
 
+    public virtual ICollection<ContractDetail> ContractDetails { get; set; } = new List<ContractDetail>();
+
     public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 
     public virtual ICollection<ProductSpecification> ProductSpecifications { get; set; } = new List<ProductSpecification>();
@@ -32,4 +34,6 @@ public partial class Product
     public virtual ICollection<ProductsInWarehouse> ProductsInWarehouses { get; set; } = new List<ProductsInWarehouse>();
 
     public virtual ICollection<ProductCatalog> Catalogs { get; set; } = new List<ProductCatalog>();
+
+    public virtual ICollection<Promotion> Promotions { get; set; } = new List<Promotion>();
 }

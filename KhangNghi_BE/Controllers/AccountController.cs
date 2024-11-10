@@ -38,7 +38,7 @@ public class AccountController : ControllerBase
 
             if (user == null)
             {
-                return BadRequest(new ApiReponse
+                return BadRequest(new ApiResponse
                 {
                     Success = false,
                     Message = "Sai tên đăng nhập hoặc mật khẩu"
@@ -49,14 +49,14 @@ public class AccountController : ControllerBase
 
             Token? token = await GenerateToken(user);
 
-            return Ok(new ApiReponse
+            return Ok(new ApiResponse
             {
                 Success = true,
                 Data = token
             });
         }
 
-        return BadRequest(new ApiReponse
+        return BadRequest(new ApiResponse
         {
             Success = false,
             Message = "Dữ liệu không hợp lệ",
@@ -72,7 +72,7 @@ public class AccountController : ControllerBase
             User? existedUser = await _accountService.GetUserByUsernameAsync(register.Username);
             if(existedUser != null)
             {
-                return BadRequest(new ApiReponse
+                return BadRequest(new ApiResponse
                 {
                     Success = false,
                     Message = "Tên đăng nhập đã tồn tại"
@@ -83,7 +83,7 @@ public class AccountController : ControllerBase
 
             if (user == null)
             {
-                return BadRequest(new ApiReponse
+                return BadRequest(new ApiResponse
                 {
                     Success = false,
                     Message = "Đăng ký thất bại, đã xảy ra lỗi"
@@ -92,14 +92,14 @@ public class AccountController : ControllerBase
 
             Token? token = await GenerateToken(user);
 
-            return Ok(new ApiReponse
+            return Ok(new ApiResponse
             {
                 Success = true,
                 Data = token
             });
         }
         
-        return BadRequest(new ApiReponse
+        return BadRequest(new ApiResponse
         {
             Success = false,
             Message = "Dữ liệu không hợp lệ",
@@ -134,7 +134,7 @@ public class AccountController : ControllerBase
                 if (!jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
                     StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return BadRequest(new ApiReponse
+                    return BadRequest(new ApiResponse
                     {
                         Success = false,
                         Message = "Token không hợp lệ"
@@ -147,7 +147,7 @@ public class AccountController : ControllerBase
 
             if(utcExpireDate.ConvertUnixTimeToDateTime() > DateTime.UtcNow)
             {
-                return BadRequest(new ApiReponse
+                return BadRequest(new ApiResponse
                 {
                     Success = false,
                     Message = "Token chưa hết hạn"
@@ -159,7 +159,7 @@ public class AccountController : ControllerBase
 
             if (token == null)
             {
-                return BadRequest(new ApiReponse
+                return BadRequest(new ApiResponse
                 {
                     Success = false,
                     Message = "Token không hợp lệ"
@@ -168,7 +168,7 @@ public class AccountController : ControllerBase
 
             if (token.IsUsed == true)
             {
-                return BadRequest(new ApiReponse
+                return BadRequest(new ApiResponse
                 {
                     Success = false,
                     Message = "Token đã được sử dụng"
@@ -177,7 +177,7 @@ public class AccountController : ControllerBase
 
             if(token.IsRevoked == true)
             {
-                return BadRequest(new ApiReponse
+                return BadRequest(new ApiResponse
                 {
                     Success = false,
                     Message = "Token đã bị thu hồi"
@@ -186,7 +186,7 @@ public class AccountController : ControllerBase
 
             if (token.ExpireAt <= DateTime.UtcNow)
             {
-                return BadRequest(new ApiReponse
+                return BadRequest(new ApiResponse
                 {
                     Success = false,
                     Message = "Token đã hết hạn, vui lòng đăng nhập lại"
@@ -196,7 +196,7 @@ public class AccountController : ControllerBase
             var jti = tokenVerification.Claims.FirstOrDefault(t => t.Type == JwtRegisteredClaimNames.Jti)?.Value;
             if (jti != token.JwtId)
             {
-                return BadRequest(new ApiReponse
+                return BadRequest(new ApiResponse
                 {
                     Success = false,
                     Message = "Token không hợp lệ"
@@ -206,7 +206,7 @@ public class AccountController : ControllerBase
             await _accountService.UpdateRefreshTokenAsync(rToken.RefreshToken);
             User? user = await _accountService.GetUserAsync(token.UserId);
 
-            return Ok(new ApiReponse
+            return Ok(new ApiResponse
             {
                 Success = true,
                 Data = user != null ? await GenerateToken(user) : null
@@ -214,7 +214,7 @@ public class AccountController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(new ApiReponse
+            return BadRequest(new ApiResponse
             {
                 Success = false,
                 Message = "Đã xảy ra lỗi"
@@ -231,7 +231,7 @@ public class AccountController : ControllerBase
             string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null)
             {
-                return BadRequest(new ApiReponse
+                return BadRequest(new ApiResponse
                 {
                     Success = false,
                     Message = "Không tìm thấy thông tin người dùng"
@@ -240,14 +240,14 @@ public class AccountController : ControllerBase
 
             bool result = await _accountService.ChangePasswordAsync(userId, password);
 
-            return Ok(new ApiReponse
+            return Ok(new ApiResponse
             {
                 Success = result,
                 Message = result ? "Đổi mật khẩu thành công" : "Đổi mật khẩu thất bại"
             });
         }
 
-        return BadRequest(new ApiReponse
+        return BadRequest(new ApiResponse
         {
             Success = false,
             Message = "Dữ liệu không hợp lệ",

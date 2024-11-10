@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KhangNghi_BE.Data.Models;
+﻿using KhangNghi_BE.Data.Models;
 using KhangNghi_BE.Data.ViewModels;
 
 namespace KhangNghi_BE.Services
