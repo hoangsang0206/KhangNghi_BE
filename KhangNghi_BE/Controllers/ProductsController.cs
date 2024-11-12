@@ -163,6 +163,24 @@ namespace KhangNghi_BE.Controllers
             return BadRequest(response);
         }
 
+        [HttpPut("update")]
+        [AdminAuthorize(Code = Functions.UpdateProduct)]
+        public async Task<IActionResult> UpdateProduct(ProductVM product)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Dữ liệu không hợp lệ",
+                    Data = ModelState
+                });
+            }
+
+
+            return Ok();
+        }
+
         [HttpDelete("delete/{productId}")]
         [AdminAuthorize(Code = Functions.DeleteProduct)]
         public async Task<IActionResult> DeleteProduct(string productId)
@@ -170,7 +188,7 @@ namespace KhangNghi_BE.Controllers
             Product? product = await _productService.GetByIdAsync(productId);
             if(product == null)
             {
-                return BadRequest(new ApiResponse
+                return NotFound(new ApiResponse
                 {
                     Success = false,
                     Message = "Sản phẩm không tồn tại"

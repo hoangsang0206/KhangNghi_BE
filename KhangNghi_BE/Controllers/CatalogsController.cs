@@ -122,7 +122,7 @@ namespace KhangNghi_BE.Controllers
             ProductCatalog? catalog = await _catalogService.GetByIdAsync(catalogId);
             if (catalog == null)
             {
-                return BadRequest(new ApiResponse
+                return NotFound(new ApiResponse
                 {
                     Success = false,
                     Message = "Danh mục không tồn tại"

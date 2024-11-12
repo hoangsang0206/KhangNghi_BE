@@ -31,5 +31,54 @@ namespace KhangNghi_BE.Services.Services
                 .Include(x => x.ServiceImages)
                 .FirstOrDefaultAsync(x => x.ServiceId == id);
         }
+
+        public async Task<bool> CreateAsync(ServiceVM service)
+        {
+            Service _service = new Service
+            {
+                ServiceId = service.ServiceId,
+                ServiceName = service.ServiceName,
+                ShortDescription = service.ShortDescription,
+                Description = service.Description,
+                Price = service.Price,
+                CalculationUnit = service.CalculationUnit,
+                CatalogId = service.CatalogId
+            };
+
+            await _context.Services.AddAsync(_service);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateAsync(ServiceVM service)
+        {
+            Service? _service = await GetByIdAsync(service.ServiceId);
+
+            if (_service == null)
+            {
+                return false;
+            }
+
+            _service.ServiceName = service.ServiceName;
+            _service.ShortDescription = service.ShortDescription;
+            _service.Description = service.Description;
+            _service.Price = service.Price;
+            _service.CalculationUnit = service.CalculationUnit;
+            _service.CatalogId = service.CatalogId;
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeleteAsync(string id)
+        {
+            Service? _service = await GetByIdAsync(id);
+
+            if (_service == null)
+            {
+                return false;
+            }
+
+            _context.Services.Remove(_service);
+            return await _context.SaveChangesAsync() > 0;
+        }
     }
 }
