@@ -65,4 +65,21 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/Files"
 });
 
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    KhangNghiContext context = scope.ServiceProvider.GetRequiredService<KhangNghiContext>();
+
+    if (!await context.Roles.AnyAsync(r => r.RoleId == "user"))
+    {
+        await context.Roles.AddAsync(new Role { RoleId = "user", RoleName = "User" });
+        await context.SaveChangesAsync();
+    }
+
+    if (!await context.Roles.AnyAsync(r => r.RoleId == "admin"))
+    {
+        await context.Roles.AddAsync(new Role { RoleId = "admin", RoleName = "Admin" });
+        await context.SaveChangesAsync();
+    }
+}
+
 app.Run();
