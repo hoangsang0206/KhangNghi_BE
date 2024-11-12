@@ -36,5 +36,21 @@ namespace KhangNghi_BE.Services.Services
 
             return isAuthorized;
         }
+
+        public async Task<IEnumerable<Function>> GetAuthorizedFunctionsAsync(string groudId)
+        {
+            IEnumerable<FunctionAuthorization> authorizations = await _context.FunctionAuthorizations
+                .Where(fa => fa.GroupId == groudId && fa.IsAuthorized == true)
+                .Select(fa => new FunctionAuthorization
+                {
+                    AuthId = fa.AuthId,
+                    GroupId = fa.GroupId,
+                    FunctionId = fa.FunctionId,
+                    Function = fa.Function,
+                })
+                .ToListAsync();
+
+            return authorizations.Select(fa => fa.Function).ToList();
+        }
     }
 }

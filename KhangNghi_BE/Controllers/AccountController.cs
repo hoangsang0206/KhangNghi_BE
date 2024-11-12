@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Azure.Core;
+using System.Text.Json;
 using KhangNghi_BE.Data.Models;
 using KhangNghi_BE.Data.ViewModels;
 using KhangNghi_BE.Services;
@@ -18,13 +18,15 @@ namespace KhangNghi_BE.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;
+    private readonly Services.IAuthorizationService _authorizationService;
     private readonly IConfiguration _configuration;
     
     private readonly string? _secretKey;
     
-    public AccountController(IAccountService accountService, IConfiguration configuration)
+    public AccountController(IAccountService accountService, Services.IAuthorizationService authorizationService , IConfiguration configuration)
     {
         _accountService = accountService;
+        _authorizationService = authorizationService;
         _configuration = configuration;
         _secretKey = _configuration.GetSection("SecretKey").Value;
     }
@@ -45,6 +47,8 @@ public class AccountController : ControllerBase
                 });
             }
 
+            IEnumerable<Function> authorizedFunctions = await _authorizationService.GetAuthorizedFunctionsAsync(user?.GroupId ?? "");
+
             await _accountService.UpdateRefreshTokenAsync(user.UserId);
 
             Token? token = await GenerateToken(user);
@@ -52,7 +56,19 @@ public class AccountController : ControllerBase
             return Ok(new ApiResponse
             {
                 Success = true,
-                Data = token
+                Data = new
+                {
+                    token,
+                    authorized = new
+                    {
+                        hasAllPermission = user.Group?.HasAllPermission,
+                        functions = authorizedFunctions.Any() ? authorizedFunctions.Select(f => new
+                        {
+                            f.FuncId,
+                            f.FuncName,
+                        }) : null
+                    }
+                }
             });
         }
 
@@ -90,12 +106,25 @@ public class AccountController : ControllerBase
                 });
             }
 
+            IEnumerable<Function> authorizedFunctions = await _authorizationService.GetAuthorizedFunctionsAsync(user?.GroupId ?? "");
             Token? token = await GenerateToken(user);
 
             return Ok(new ApiResponse
             {
                 Success = true,
-                Data = token
+                Data = new
+                {
+                    token,
+                    authorized = new
+                    {
+                        hasAllPermission = user.Group?.HasAllPermission,
+                        functions = authorizedFunctions.Any() ? authorizedFunctions.Select(f => new
+                        {
+                            f.FuncId,
+                            f.FuncName,
+                        }) : null
+                    }
+                }
             });
         }
         
@@ -205,11 +234,24 @@ public class AccountController : ControllerBase
 
             await _accountService.UpdateRefreshTokenAsync(rToken.RefreshToken);
             User? user = await _accountService.GetUserAsync(token.UserId);
+            IEnumerable<Function> authorizedFunctions = await _authorizationService.GetAuthorizedFunctionsAsync(user?.GroupId ?? "");
 
             return Ok(new ApiResponse
             {
                 Success = true,
-                Data = user != null ? await GenerateToken(user) : null
+                Data = new
+                {
+                    token = user != null ? await GenerateToken(user) : null,
+                    authorized = new
+                    {
+                        hasAllPermission = user.Group?.HasAllPermission,
+                        functions = authorizedFunctions.Any() ? authorizedFunctions.Select(f => new
+                        {
+                            f.FuncId,
+                            f.FuncName,
+                        }) : null
+                    }
+                }
             });
         }
         catch (Exception e)
@@ -271,7 +313,7 @@ public class AccountController : ControllerBase
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim(ClaimTypes.Role, user.RoleId),
                     new Claim(ClaimTypes.Email, user.Email ?? ""),
-                    new Claim(JwtRegisteredClaimNames.Jti, tokenId)
+                    new Claim(JwtRegisteredClaimNames.Jti, tokenId),
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

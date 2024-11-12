@@ -150,6 +150,7 @@ namespace KhangNghi_BE.Services.Services
         public async Task<User?> GetUserByUsernameAsync(string username)
         {
             return await _context.Users
+                .Include(u => u.Group)
                 .FirstOrDefaultAsync(u => u.Username == username);
         }
 
