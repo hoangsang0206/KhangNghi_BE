@@ -25,5 +25,12 @@
         public const string UpdateService = "update-service";
         public const string DeleteService = "delete-service";
         #endregion
+
+        #region Warehouse
+        public const string ViewWarehouse = "view-warehouse";
+        public const string CreateWarehouse = "create-warehouse";
+        public const string UpdateWarehouse = "update-warehouse";
+        public const string DeleteWarehouse = "delete-warehouse";
+        #endregion
     }
 }

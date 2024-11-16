@@ -89,9 +89,9 @@ namespace KhangNghi_BE.Controllers
             return result ? Ok(response) : BadRequest(response);
         }
         
-        [HttpPut("update/{sId}")]
+        [HttpPut("update")]
         [AdminAuthorize(Code = Functions.UpdateService)]
-        public async Task<IActionResult> UpdateService(string sId, ServiceVM service)
+        public async Task<IActionResult> UpdateService(ServiceVM service)
         {
             if (!ModelState.IsValid)
             {
@@ -108,7 +108,7 @@ namespace KhangNghi_BE.Controllers
             ApiResponse response = new ApiResponse
             {
                 Success = result,
-                Data = result ? await _serviceService.GetByIdAsync(sId) : null
+                Data = result ? await _serviceService.GetByIdAsync(service.ServiceId) : null
             };
 
             return result ? Ok(response) : BadRequest(response);
