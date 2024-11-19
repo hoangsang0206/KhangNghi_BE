@@ -41,6 +41,8 @@ public partial class KhangNghiContext : DbContext
 
     public virtual DbSet<FunctionAuthorization> FunctionAuthorizations { get; set; }
 
+    public virtual DbSet<FunctionCategory> FunctionCategories { get; set; }
+
     public virtual DbSet<Invoice> Invoices { get; set; }
 
     public virtual DbSet<JobAssignment> JobAssignments { get; set; }
@@ -90,6 +92,10 @@ public partial class KhangNghiContext : DbContext
     public virtual DbSet<Warehouse> Warehouses { get; set; }
 
     public virtual DbSet<WorkSchedule> WorkSchedules { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=AORUS-Laptop;Database=KhangNghi;User Id=sang;Password=123456;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -157,13 +163,11 @@ public partial class KhangNghiContext : DbContext
             entity.Property(e => e.CategoryId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.CompletedAt).HasColumnType("datetime");
             entity.Property(e => e.CreateAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.CustomerId)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.InvoiceId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.SignedAt).HasColumnType("datetime");
@@ -176,10 +180,6 @@ public partial class KhangNghiContext : DbContext
                 .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Contracts__Custo__02FC7413");
-
-            entity.HasOne(d => d.Invoice).WithMany(p => p.Contracts)
-                .HasForeignKey(d => d.InvoiceId)
-                .HasConstraintName("FK__Contracts__Invoi__0F624AF8");
         });
 
         modelBuilder.Entity<ContractCategory>(entity =>
@@ -194,7 +194,7 @@ public partial class KhangNghiContext : DbContext
 
         modelBuilder.Entity<ContractDetail>(entity =>
         {
-            entity.HasKey(e => new { e.ContractId, e.ProductId, e.ServiceId }).HasName("PK__Contract__0988E3B524403C5A");
+            entity.HasKey(e => e.Id).HasName("PK__Contract__3214EC076329C188");
 
             entity.Property(e => e.ContractId)
                 .HasMaxLength(50)
@@ -210,17 +210,15 @@ public partial class KhangNghiContext : DbContext
             entity.HasOne(d => d.Contract).WithMany(p => p.ContractDetails)
                 .HasForeignKey(d => d.ContractId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ContractD__Contr__4589517F");
+                .HasConstraintName("FK__ContractD__Contr__0E04126B");
 
             entity.HasOne(d => d.Product).WithMany(p => p.ContractDetails)
                 .HasForeignKey(d => d.ProductId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ContractD__Produ__467D75B8");
+                .HasConstraintName("FK__ContractD__Produ__0EF836A4");
 
             entity.HasOne(d => d.Service).WithMany(p => p.ContractDetails)
                 .HasForeignKey(d => d.ServiceId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ContractD__Servi__477199F1");
+                .HasConstraintName("FK__ContractD__Servi__0FEC5ADD");
         });
 
         modelBuilder.Entity<Customer>(entity =>
@@ -349,7 +347,15 @@ public partial class KhangNghiContext : DbContext
             entity.Property(e => e.FuncId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.CateId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.FuncName).HasMaxLength(100);
+
+            entity.HasOne(d => d.Cate).WithMany(p => p.Functions)
+                .HasForeignKey(d => d.CateId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Functions__CateI__67DE6983");
         });
 
         modelBuilder.Entity<FunctionAuthorization>(entity =>
@@ -375,9 +381,21 @@ public partial class KhangNghiContext : DbContext
                 .HasConstraintName("FK__FunctionA__Group__42E1EEFE");
         });
 
+        modelBuilder.Entity<FunctionCategory>(entity =>
+        {
+            entity.HasKey(e => e.CateId).HasName("PK__Function__27638D14A8C8686D");
+
+            entity.Property(e => e.CateId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.CateName).HasMaxLength(100);
+        });
+
         modelBuilder.Entity<Invoice>(entity =>
         {
-            entity.HasKey(e => e.InvoiceId).HasName("PK__Invoices__D796AAB549F9FB38");
+            entity.HasKey(e => e.InvoiceId).HasName("PK__Invoices__D796AAB59B49F69A");
+
+            entity.HasIndex(e => e.ContractId, "UQ__Invoices__C90D3468CB7F1951").IsUnique();
 
             entity.Property(e => e.InvoiceId)
                 .HasMaxLength(50)
@@ -396,14 +414,14 @@ public partial class KhangNghiContext : DbContext
             entity.Property(e => e.SubTotal).HasColumnType("decimal(18, 0)");
             entity.Property(e => e.TotalAmout).HasColumnType("decimal(18, 0)");
 
-            entity.HasOne(d => d.Contract).WithMany(p => p.Invoices)
-                .HasForeignKey(d => d.ContractId)
+            entity.HasOne(d => d.Contract).WithOne(p => p.Invoice)
+                .HasForeignKey<Invoice>(d => d.ContractId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Invoices__Contra__0C85DE4D");
+                .HasConstraintName("FK__Invoices__Contra__7EC1CEDB");
 
             entity.HasOne(d => d.Employee).WithMany(p => p.Invoices)
                 .HasForeignKey(d => d.EmployeeId)
-                .HasConstraintName("FK__Invoices__Employ__0B91BA14");
+                .HasConstraintName("FK__Invoices__Employ__7DCDAAA2");
         });
 
         modelBuilder.Entity<JobAssignment>(entity =>
@@ -595,7 +613,7 @@ public partial class KhangNghiContext : DbContext
 
         modelBuilder.Entity<PromotionUsage>(entity =>
         {
-            entity.HasKey(e => e.UsageId).HasName("PK__Promotio__29B1972017FB84CC");
+            entity.HasKey(e => e.UsageId).HasName("PK__Promotio__29B197202BF46448");
 
             entity.Property(e => e.CustomerId)
                 .HasMaxLength(50)
@@ -611,16 +629,16 @@ public partial class KhangNghiContext : DbContext
             entity.HasOne(d => d.Customer).WithMany(p => p.PromotionUsages)
                 .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Promotion__Custo__14270015");
+                .HasConstraintName("FK__Promotion__Custo__056ECC6A");
 
             entity.HasOne(d => d.Invoice).WithMany(p => p.PromotionUsages)
                 .HasForeignKey(d => d.InvoiceId)
-                .HasConstraintName("FK__Promotion__Invoi__1332DBDC");
+                .HasConstraintName("FK__Promotion__Invoi__047AA831");
 
             entity.HasOne(d => d.Promotion).WithMany(p => p.PromotionUsages)
                 .HasForeignKey(d => d.PromotionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Promotion__Promo__123EB7A3");
+                .HasConstraintName("FK__Promotion__Promo__038683F8");
         });
 
         modelBuilder.Entity<RefreshToken>(entity =>

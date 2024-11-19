@@ -19,8 +19,10 @@ namespace KhangNghi_BE.Controllers
             _warehouseService = warehouseService;
         }
 
-        [HttpGet]
-        [AdminAuthorize(Code = Functions.ViewWarehouse)]
+        #region CRUD Warehouse
+
+        [HttpGet("all")]
+        [AdminAuthorize(Code = Functions.ViewWarehouses)]
         public async Task<IActionResult> GetAsync(string? sortBy)
         {
             IEnumerable<Warehouse> warehouses = await _warehouseService.GetAsync(sortBy);
@@ -31,8 +33,8 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
-        [HttpGet("{id}")]
-        [AdminAuthorize(Code = Functions.ViewWarehouse)]
+        [HttpGet("1/{id}")]
+        [AdminAuthorize(Code = Functions.ViewWarehouses)]
         public async Task<IActionResult> GetByIdAsync(string id)
         {
             Warehouse? wh = await _warehouseService.GetByIdAsync(id);
@@ -52,7 +54,7 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         [AdminAuthorize(Code = Functions.CreateWarehouse)]
         public async Task<IActionResult> CreateAsync([FromBody] WarehouseVM warehouse)
         {
@@ -93,7 +95,7 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
-        [HttpPut]
+        [HttpPut("update")]
         [AdminAuthorize(Code = Functions.UpdateWarehouse)]
         public async Task<IActionResult> UpdateAsync([FromBody] WarehouseVM warehouse)
         {
@@ -145,5 +147,39 @@ namespace KhangNghi_BE.Controllers
                 Message = "Xóa kho hàng thành công"
             });
         }
+
+        #endregion
+
+        #region Warehouse Import
+
+        [HttpPost("import/create")]
+        [AdminAuthorize(Code = Functions.WarehouseImport)]
+        public async Task<IActionResult> CreateImportSlipAsync(string warehouseId, string supplierId)
+        {
+            if(string.IsNullOrEmpty(warehouseId) || string.IsNullOrEmpty(supplierId))
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Vui lòng chọn kho hàng và nhà cung cấp"
+                });
+            }
+
+            //
+
+            return Ok(new ApiResponse
+            {
+                Success = true,
+                Message = "Nhập kho hàng thành công"
+            });
+        }
+
+        #endregion
+
+        #region Warehouse Export
+
+
+
+        #endregion
     }
 }

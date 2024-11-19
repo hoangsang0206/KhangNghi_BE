@@ -25,8 +25,6 @@ public partial class Invoice
 
     public virtual Contract Contract { get; set; } = null!;
 
-    public virtual ICollection<Contract> Contracts { get; set; } = new List<Contract>();
-
     public virtual Employee? Employee { get; set; }
 
     public virtual ICollection<PromotionUsage> PromotionUsages { get; set; } = new List<PromotionUsage>();

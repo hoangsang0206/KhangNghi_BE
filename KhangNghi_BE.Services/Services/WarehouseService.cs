@@ -1,33 +1,98 @@
 ﻿using KhangNghi_BE.Data.Models;
 using KhangNghi_BE.Data.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace KhangNghi_BE.Services.Services
 {
     public class WarehouseService : IWarehouseService
     {
-        public Task<bool> CreateAsync(WarehouseVM warehouse)
-        {
-            throw new NotImplementedException();
-        }
+        private readonly KhangNghiContext _context;
 
-        public Task<bool> DeleteAsync(string id)
-        {
-            throw new NotImplementedException();
-        }
+        public WarehouseService(KhangNghiContext context) => _context = context;
 
-        public Task<IEnumerable<Warehouse>> GetAsync(string? sortBy)
+        #region CRUD Warehouse
+
+        public async Task<IEnumerable<Warehouse>> GetAsync(string? sortBy)
         {
-            throw new NotImplementedException();
+            return await _context.Warehouses.ToListAsync();
         }
 
         public Task<Warehouse?> GetByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            return _context.Warehouses
+                .Where(w => w.WarehouseId == id)
+                .Include(w => w.Address)
+                .FirstOrDefaultAsync();
         }
 
-        public Task<bool> UpdateAsync(WarehouseVM warehouse)
+        public async Task<bool> CreateAsync(WarehouseVM warehouse)
+        {
+            await _context.Warehouses.AddAsync(new Warehouse
+            {
+                WarehouseId = warehouse.WarehouseId,
+                WarehouseName = warehouse.WarehouseName,
+                Address = new Address
+                {
+                    AddressId = Guid.NewGuid().ToString(),
+                    Street = warehouse.Street,
+                    Ward = warehouse.Ward,
+                    District = warehouse.District,
+                    City = warehouse.City
+                }
+            });
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateAsync(WarehouseVM warehouse)
+        {
+            Warehouse? _warehouse = await GetByIdAsync(warehouse.WarehouseId);
+            if (_warehouse == null)
+            {
+                return false;
+            }
+
+            _warehouse.WarehouseName = warehouse.WarehouseName;
+            _warehouse.Address.Street = warehouse.Street;
+            _warehouse.Address.Ward = warehouse.Ward;
+            _warehouse.Address.District = warehouse.District;
+            _warehouse.Address.City = warehouse.City;
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeleteAsync(string id)
+        {
+            Warehouse? warehouse = await GetByIdAsync(id);
+            if (warehouse == null)
+            {
+                return false;
+            }
+
+            _context.Warehouses.Remove(warehouse);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        #endregion
+
+
+        #region Warehouse Import
+
+        public Task<PagedList<StockEntry>> GetImportSlipsAsync(string? warehouseId, string? sortBy, int page, int pageSize)
         {
             throw new NotImplementedException();
         }
+
+        public Task<StockEntry?> GetImportSlipByIdAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> CreateImportSlipAsync(StockEntry slip)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

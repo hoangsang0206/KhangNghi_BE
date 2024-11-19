@@ -5,11 +5,18 @@ namespace KhangNghi_BE.Services
 {
     public interface IWarehouseService
     {
+        #region CRUD Warehouse
         Task<IEnumerable<Warehouse>> GetAsync(string? sortBy);
         Task<Warehouse?> GetByIdAsync(string id);
-
         Task<bool> CreateAsync(WarehouseVM warehouse);
         Task<bool> UpdateAsync(WarehouseVM warehouse);
         Task<bool> DeleteAsync(string id);
+        #endregion
+
+        #region Warehouse Import
+        Task<PagedList<StockEntry>> GetImportSlipsAsync(string? warehouseId, string? sortBy, int page, int pageSize);
+        Task<StockEntry?> GetImportSlipByIdAsync(string id);
+        Task<bool> CreateImportSlipAsync(StockEntry slip);
+        #endregion
     }
 }

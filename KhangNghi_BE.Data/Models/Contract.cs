@@ -17,7 +17,7 @@ public partial class Contract
 
     public string CustomerId { get; set; } = null!;
 
-    public string? InvoiceId { get; set; }
+    public DateTime? CompletedAt { get; set; }
 
     public virtual ContractCategory? Category { get; set; }
 
@@ -26,8 +26,6 @@ public partial class Contract
     public virtual Customer Customer { get; set; } = null!;
 
     public virtual Invoice? Invoice { get; set; }
-
-    public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
     public virtual ICollection<JobAssignment> JobAssignments { get; set; } = new List<JobAssignment>();
 
