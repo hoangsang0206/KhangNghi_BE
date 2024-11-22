@@ -3,7 +3,7 @@ using KhangNghi_BE.Data.Models;
 using KhangNghi_BE.Data.ViewModels;
 using KhangNghi_BE.Filters;
 using KhangNghi_BE.Services;
-using Microsoft.AspNetCore.Http;
+using KhangNghi_BE.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KhangNghi_BE.Controllers
@@ -13,6 +13,8 @@ namespace KhangNghi_BE.Controllers
     public class ContractsController : ControllerBase
     {
         private readonly IContractService _contractService;
+        private readonly string _rootFolder = "Files";
+        private readonly string _docsFolder = "Documents";
         private readonly int _pageSize = 20;
 
         public ContractsController(IContractService contractService)
@@ -55,9 +57,25 @@ namespace KhangNghi_BE.Controllers
 
         [HttpPost("create")]
         [AdminAuthorize(Code = Functions.CreateContract)]
-        public async Task<IActionResult> Create([FromBody] ContractVM contract)
+        public async Task<IActionResult> Create([FromForm] ContractVM contract, IFormFile file)
         {
-            bool result = await _contractService.CreateAsync(contract);
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Dữ liệu không hợp lệ",
+                    Data = ModelState
+                });
+            }
+
+            string fileName = contract.ContractId
+                        + Path.GetExtension(file.FileName);
+            string uploadPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), _rootFolder, _docsFolder));
+
+            bool uploadResult = await FileUtils.UploadFileAsync(file, uploadPath, fileName);
+
+            bool result = await _contractService.CreateAsync(contract, $"/{_rootFolder}/{_docsFolder}/{fileName}");
             ApiResponse response = new ApiResponse
             {
                 Success = result,

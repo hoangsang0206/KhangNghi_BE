@@ -93,10 +93,6 @@ public partial class KhangNghiContext : DbContext
 
     public virtual DbSet<WorkSchedule> WorkSchedules { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=AORUS-Laptop;Database=KhangNghi;User Id=sang;Password=123456;TrustServerCertificate=True;");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Address>(entity =>
@@ -585,9 +581,11 @@ public partial class KhangNghiContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.DiscountAmount).HasColumnType("decimal(18, 0)");
+            entity.Property(e => e.EndDate).HasColumnType("datetime");
             entity.Property(e => e.MaxDiscountAmount).HasColumnType("decimal(18, 0)");
             entity.Property(e => e.PromotionName).HasMaxLength(150);
             entity.Property(e => e.PromotionType).HasMaxLength(100);
+            entity.Property(e => e.StartDate).HasColumnType("datetime");
 
             entity.HasMany(d => d.Products).WithMany(p => p.Promotions)
                 .UsingEntity<Dictionary<string, object>>(

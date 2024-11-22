@@ -9,8 +9,6 @@ namespace KhangNghi_BE.Data.ViewModels
 
         public DateTime? SignedAt { get; set; }
 
-        public string FileUrl { get; set; } = null!;
-
         public string? CategoryId { get; set; }
 
         [Required(ErrorMessage = "Mã khách hàng không được để trống")]

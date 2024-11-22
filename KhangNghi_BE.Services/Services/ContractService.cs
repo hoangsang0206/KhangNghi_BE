@@ -29,7 +29,7 @@ namespace KhangNghi_BE.Services.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<bool> CreateAsync(ContractVM contract)
+        public async Task<bool> CreateAsync(ContractVM contract, string fileUrl)
         {
             Contract _contract = new Contract
             {
@@ -37,7 +37,7 @@ namespace KhangNghi_BE.Services.Services
                 CreateAt = DateTime.Now,
                 CustomerId = contract.CustomerId,
                 SignedAt = contract.SignedAt,
-                FileUrl = contract.FileUrl,
+                FileUrl = fileUrl,
 
                 ContractDetails = contract.ContractDetails.Select(cd =>
                 {

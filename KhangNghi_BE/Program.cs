@@ -71,6 +71,8 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseCors();
+
 app.MapControllers();
 
 app.UseStaticFiles(new StaticFileOptions 

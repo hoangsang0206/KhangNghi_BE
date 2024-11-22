@@ -75,6 +75,25 @@ namespace KhangNghi_BE.Services.Services
 
         #endregion
 
+        #region Warehouse Stock
+        
+        public async Task<int> GetInStockQuantity(string productId)
+        {
+            return await _context.ProductsInWarehouses
+                .Where(p => p.ProductId == productId)
+                .SumAsync(p => p.Quantity);
+        }
+
+        public async Task<int> GetInStockQuantity(string productId, string warehouseId)
+        {
+            return await _context.ProductsInWarehouses
+                .Where(p => p.ProductId == productId && p.WarehouseId == warehouseId)
+                .Select(p => p.Quantity)
+                .FirstOrDefaultAsync();
+        }
+
+        #endregion
+
 
         #region Warehouse Import
 

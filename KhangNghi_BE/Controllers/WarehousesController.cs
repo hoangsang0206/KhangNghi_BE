@@ -150,6 +150,25 @@ namespace KhangNghi_BE.Controllers
 
         #endregion
 
+        #region Warehouse Stock
+
+        [HttpGet("instock-qty")]
+        public async Task<IActionResult> GetInStockQuantity(string productId, string? warehouseId)
+        {
+            int quantity = string.IsNullOrEmpty(warehouseId) 
+                ? await _warehouseService.GetInStockQuantity(productId)
+                : await _warehouseService.GetInStockQuantity(productId, warehouseId);
+
+            return Ok(new ApiResponse
+            {
+                Success = true,
+                Message = quantity <= 0 ? "Sản phẩm đã hết hàng" : null,
+                Data = quantity
+            });
+        }
+
+        #endregion
+
         #region Warehouse Import
 
         [HttpPost("import/create")]

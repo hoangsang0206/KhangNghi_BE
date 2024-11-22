@@ -8,7 +8,7 @@ namespace KhangNghi_BE.Services
         Task<PagedList<Contract>> GetAsync(string? sortBy, string filterBy, int page, int pageSize);
         Task<Contract?> GetByIdAsync(string id);
 
-        Task<bool> CreateAsync(ContractVM contract);
+        Task<bool> CreateAsync(ContractVM contract, string fileUrl);
         Task<bool> UpdateAsync(ContractVM contract);
         Task<bool> DeleteAsync(string id);
 
