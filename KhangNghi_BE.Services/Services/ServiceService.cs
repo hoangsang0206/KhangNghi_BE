@@ -2,6 +2,7 @@
 using KhangNghi_BE.Data.ViewModels;
 using KhangNghi_BE.Services.Utils;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace KhangNghi_BE.Services.Services
 {
@@ -22,6 +23,15 @@ namespace KhangNghi_BE.Services.Services
         {
             return await _context.Services
                 .SortBy(sortBy)
+                .ToPagedListAsync(page, pageSize);
+        }
+
+        public async Task<PagedList<Service>> SearchByNameAsync(string query, int page, int pageSize)
+        {
+            string[] keywords = query.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            return await _context.Services
+                .Where(p => keywords.All(k => p.ServiceName.Contains(k)))
                 .ToPagedListAsync(page, pageSize);
         }
 

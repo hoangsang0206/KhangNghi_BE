@@ -9,11 +9,11 @@ namespace KhangNghi_BE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ServiceCalalogsController : ControllerBase
+    public class ServiceCatalogsController : ControllerBase
     {
         private readonly IServiceCatalogService _serviceCatalogService;
 
-        public ServiceCalalogsController(IServiceCatalogService serviceCatalogService)
+        public ServiceCatalogsController(IServiceCatalogService serviceCatalogService)
         {
             _serviceCatalogService = serviceCatalogService;
         }

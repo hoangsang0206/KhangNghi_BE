@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <Folder Include="Files\Documents\" />
-    <Folder Include="Files\Images\" />
+    <Folder Include="Files\Images\Services\" />
   </ItemGroup>
 
 </Project>

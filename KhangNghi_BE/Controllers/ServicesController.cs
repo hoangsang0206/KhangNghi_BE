@@ -41,6 +41,18 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchServices(string q, int page = 1)
+        {
+            PagedList<Service> services = await _serviceService.SearchByNameAsync(q, page, _pageSize);
+
+            return Ok(new ApiResponse
+            {
+                Success = true,
+                Data = services
+            });
+        }
+
         [HttpGet("detail/{sId}")]
         public async Task<IActionResult> GetServiceById(string sId)
         {
