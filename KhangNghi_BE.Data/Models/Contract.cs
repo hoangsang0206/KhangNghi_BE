@@ -19,6 +19,8 @@ public partial class Contract
 
     public DateTime? CompletedAt { get; set; }
 
+    public string? InvoiceId { get; set; }
+
     public virtual ContractCategory? Category { get; set; }
 
     public virtual ICollection<ContractDetail> ContractDetails { get; set; } = new List<ContractDetail>();

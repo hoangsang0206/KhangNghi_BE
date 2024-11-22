@@ -7,6 +7,8 @@ public partial class User
 {
     public string UserId { get; set; } = null!;
 
+    public string Username { get; set; } = null!;
+
     public DateTime? CreateAt { get; set; }
 
     public string? AvatarUrl { get; set; }
@@ -28,8 +30,6 @@ public partial class User
     public string? CustomerId { get; set; }
 
     public string? GroupId { get; set; }
-
-    public string Username { get; set; } = null!;
 
     public virtual ICollection<ChatMember> ChatMembers { get; set; } = new List<ChatMember>();
 

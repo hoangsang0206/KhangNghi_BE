@@ -5,6 +5,7 @@ namespace KhangNghi_BE.Data.ViewModels
     public class ContractVM
     {
         [Required(ErrorMessage = "Mã hợp đồng không được để trống")]
+        [MaxLength(150, ErrorMessage = "Mã hợp đồng tối đa 150 ký tự")]
         public string ContractId { get; set; } = null!;
 
         public DateTime? SignedAt { get; set; }
