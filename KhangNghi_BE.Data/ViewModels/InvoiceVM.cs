@@ -6,7 +6,7 @@ namespace KhangNghi_BE.Data.ViewModels
     {
         public string? Note { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Mã thuế không để trống")]
         [Range(0, double.MaxValue, ErrorMessage = "% thuế phải lớn hơn hoặc bằng 0" )]
         public double TaxPercent { get; set; }
 
