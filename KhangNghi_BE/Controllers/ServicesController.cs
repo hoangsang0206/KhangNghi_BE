@@ -43,7 +43,7 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
-        [HttpGet("detail/{sId}")]
+        [HttpGet("detail")]
         public async Task<IActionResult> GetServiceById(string sId)
         {
             Service? service = await _serviceService.GetByIdAsync(sId);
@@ -126,7 +126,7 @@ namespace KhangNghi_BE.Controllers
             return result ? Ok(response) : BadRequest(response);
         }
 
-        [HttpDelete("delete/{sId}")]
+        [HttpDelete("delete")]
         [AdminAuthorize(Code = Functions.DeleteService)]
         public async Task<IActionResult> DeleteService(string sId)
         {

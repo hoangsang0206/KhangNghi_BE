@@ -90,7 +90,7 @@ namespace KhangNghi_BE.Controllers
             return result ? Ok(response) : BadRequest(response);
         }
 
-        [HttpDelete("delete/{catalogId}")]
+        [HttpDelete("delete")]
         [AdminAuthorize(Code = Functions.DeleteServiceCatalog)]
         public async Task<IActionResult> DeleteCatalog(string catalogId)
         {

@@ -47,7 +47,7 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
-        [HttpGet("catalog/{catalogId}")]
+        [HttpGet("catalog")]
         public async Task<IActionResult> GetProductsByCatalog(string? sortBy, string catalogId, int page = 1)
         {
             PagedList<Product> products = await _productService.GetByCatalogAsync(sortBy, catalogId, page, _pageSize);
@@ -71,7 +71,7 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
-        [HttpGet("detail/{id}")]
+        [HttpGet("detail")]
         public async Task<IActionResult> GetProductById(string id)
         {
             Product? product = await _productService.GetByIdAsync(id);
@@ -153,7 +153,7 @@ namespace KhangNghi_BE.Controllers
             return Ok();
         }
 
-        [HttpDelete("delete/{productId}")]
+        [HttpDelete("delete")]
         [AdminAuthorize(Code = Functions.DeleteProduct)]
         public async Task<IActionResult> DeleteProduct(string productId)
         {

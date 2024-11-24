@@ -110,7 +110,7 @@ namespace KhangNghi_BE.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
         [AdminAuthorize(Code = Functions.DeleteContract)]
         public async Task<IActionResult> Delete(string id)
         {

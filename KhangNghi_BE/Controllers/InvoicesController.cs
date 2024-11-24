@@ -39,11 +39,11 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
-        [HttpGet("by-contract/{id}")]
+        [HttpGet("by-contract")]
         [AdminAuthorize(Code = Functions.ViewInvoices)]
-        public async Task<IActionResult> GetInvoiceByContractId(string id)
+        public async Task<IActionResult> GetInvoiceByContractId(string cId)
         {
-            Invoice? invoice = await _invoiceService.GetByContractId(id);
+            Invoice? invoice = await _invoiceService.GetByContractId(cId);
 
             if (invoice == null)
             {
@@ -61,7 +61,7 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
         [AdminAuthorize(Code = Functions.ViewInvoices)]
         public async Task<IActionResult> GetInvoiceById(string id)
         {
@@ -153,7 +153,7 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
-        [HttpPut("paid/{id}")]
+        [HttpPut("paid")]
         [AdminAuthorize(Code = Functions.UpdateInvoice)]
         public async Task<IActionResult> SetPaid(string id)
         {
@@ -184,7 +184,7 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
         [AdminAuthorize(Code = Functions.DeleteInvoice)]
         public async Task<IActionResult> DeleteInvoice(string id)
         {

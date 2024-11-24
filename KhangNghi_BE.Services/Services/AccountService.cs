@@ -127,7 +127,7 @@ namespace KhangNghi_BE.Services.Services
             return false;         
         }
 
-        public async Task<bool> RevokeRefreshTokens(string userId)
+        public async Task<bool> RevokeRefreshTokensAsync(string userId)
         {
             IEnumerable<RefreshToken> tokens = await _context.RefreshTokens
                 .Where(r => r.UserId == userId)
@@ -146,6 +146,16 @@ namespace KhangNghi_BE.Services.Services
         {
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.UserId == userId);
+        }
+
+        public async Task<bool> DeleteRefreshTokensAsync(string userId)
+        {
+            IEnumerable<RefreshToken> tokens = await _context.RefreshTokens
+                 .Where(r => r.UserId == userId)
+                 .ToListAsync();
+
+            _context.RefreshTokens.RemoveRange(tokens);
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<User?> GetUserByUsernameAsync(string username)

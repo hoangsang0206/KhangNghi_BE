@@ -29,7 +29,7 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
-        [HttpGet("product-catalogs/{pId}")]
+        [HttpGet("product-catalogs")]
         public async Task<IActionResult> GetProductCatalogs(string pId)
         {
             IEnumerable<ProductCatalog> catalogs = await _catalogService.GetProductCatalogAsync(pId);
@@ -115,7 +115,7 @@ namespace KhangNghi_BE.Controllers
             return BadRequest(response);
         }
 
-        [HttpDelete("delete/{catalogId}")]
+        [HttpDelete("delete")]
         [AdminAuthorize(Code = Functions.DeleteCatalog)]
         public async Task<IActionResult> DeleteCatalog(string catalogId)
         {

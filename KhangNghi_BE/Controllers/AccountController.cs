@@ -49,7 +49,7 @@ public class AccountController : ControllerBase
 
             IEnumerable<Function> authorizedFunctions = await _authorizationService.GetAuthorizedFunctionsAsync(user?.GroupId ?? "");
 
-            await _accountService.UpdateRefreshTokenAsync(user.UserId);
+            await _accountService.DeleteRefreshTokensAsync(user.UserId);
 
             Token? token = await GenerateToken(user);
 
