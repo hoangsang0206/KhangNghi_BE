@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Folder Include="Files\Documents\" />
+    <Folder Include="Files\Images\Products\" />
     <Folder Include="Files\Images\Services\" />
   </ItemGroup>
 

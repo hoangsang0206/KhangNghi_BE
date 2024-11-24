@@ -42,7 +42,7 @@ namespace KhangNghi_BE.Services.Services
                 .FirstOrDefaultAsync(x => x.ServiceId == id);
         }
 
-        public async Task<bool> CreateAsync(ServiceVM service)
+        public async Task<bool> CreateAsync(ServiceVM service, string imageUrl)
         {
             Service _service = new Service
             {
@@ -52,7 +52,15 @@ namespace KhangNghi_BE.Services.Services
                 Description = service.Description,
                 Price = service.Price,
                 CalculationUnit = service.CalculationUnit,
-                CatalogId = service.CatalogId
+                CatalogId = service.CatalogId,
+
+                ServiceImages = new List<ServiceImage>
+                {
+                    new ServiceImage
+                    {
+                        ImageUrl = imageUrl
+                    }
+                }
             };
 
             await _context.Services.AddAsync(_service);

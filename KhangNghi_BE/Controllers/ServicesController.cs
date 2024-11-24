@@ -3,7 +3,9 @@ using KhangNghi_BE.Data.Models;
 using KhangNghi_BE.Data.ViewModels;
 using KhangNghi_BE.Filters;
 using KhangNghi_BE.Services;
+using KhangNghi_BE.Utils;
 using Microsoft.AspNetCore.Mvc;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace KhangNghi_BE.Controllers
 {
@@ -13,6 +15,10 @@ namespace KhangNghi_BE.Controllers
     {
         private readonly IServiceService _serviceService;
         private readonly int _pageSize = 30;
+        private readonly string[] _allowedExtension = { ".jpg", ".jpeg", ".png", ".webp" };
+        private readonly string _rootFolder = "Files";
+        private readonly string _imageFolder = "Images";
+        private readonly string _serviceFolder = "Services";
 
         public ServicesController(IServiceService serviceService)
         {
@@ -34,18 +40,6 @@ namespace KhangNghi_BE.Controllers
         public async Task<IActionResult> GetServices(string? sortBy, int page = 1)
         {
             PagedList<Service> services = await _serviceService.GetAsync(sortBy, page, _pageSize);
-            return Ok(new ApiResponse
-            {
-                Success = true,
-                Data = services
-            });
-        }
-
-        [HttpGet("search")]
-        public async Task<IActionResult> SearchServices(string q, int page = 1)
-        {
-            PagedList<Service> services = await _serviceService.SearchByNameAsync(q, page, _pageSize);
-
             return Ok(new ApiResponse
             {
                 Success = true,
@@ -78,7 +72,7 @@ namespace KhangNghi_BE.Controllers
 
         [HttpPost("create")]
         [AdminAuthorize(Code = Functions.CreateService)]
-        public async Task<IActionResult> CreateService(ServiceVM service)
+        public async Task<IActionResult> CreateService([FromForm] ServiceVM service, IFormFile mainImage)
         {
             if (!ModelState.IsValid)
             {
@@ -90,7 +84,40 @@ namespace KhangNghi_BE.Controllers
                 });
             }
 
-            bool result = await _serviceService.CreateAsync(service);
+            if(FileUtils.CheckAllowedExtension(mainImage.FileName, _allowedExtension))
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Định dạng ảnh không hợp lệ"
+                });
+            }
+
+            Service? existedService = await _serviceService.GetByIdAsync(service.ServiceId);
+            if (existedService != null)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Dịch vụ đã tồn tại"
+                });
+            }
+
+            string uploadedUrl = "";
+
+            string uploadPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(),
+                    _rootFolder, _imageFolder, _serviceFolder, service.ServiceId));
+            string fileName = service.ServiceId + "-"
+                + Guid.NewGuid().ToString()
+                + Path.GetExtension(mainImage.FileName);
+
+            bool fileResult = await FileUtils.UploadFileAsync(mainImage, uploadPath, fileName);
+            if (fileResult)
+            {
+                uploadedUrl = $"/{_rootFolder}/{_imageFolder}/{_serviceFolder}/{service.ServiceId}{fileName}";
+            }
+
+            bool result = await _serviceService.CreateAsync(service, uploadedUrl);
 
             ApiResponse response = new ApiResponse
             {

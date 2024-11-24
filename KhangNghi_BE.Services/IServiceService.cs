@@ -10,7 +10,7 @@ namespace KhangNghi_BE.Services
         Task<Service?> GetByIdAsync(string id);
         Task<PagedList<Service>> SearchByNameAsync(string query, int page, int pageSize);
 
-        Task<bool> CreateAsync(ServiceVM service);
+        Task<bool> CreateAsync(ServiceVM service, string imageUrl);
         Task<bool> UpdateAsync(ServiceVM service);
         Task<bool> DeleteAsync(string id);
     }

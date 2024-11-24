@@ -17,6 +17,7 @@ namespace KhangNghi_BE.Controllers
         private readonly string[] _allowedExtension = { ".jpg", ".jpeg", ".png", ".webp" };
         private readonly string _rootFolder = "Files";
         private readonly string _imageFolder = "Images";
+        private readonly string _productFolder = "Products";
 
         public ProductsController(IProductService productService)
         {
@@ -107,6 +108,15 @@ namespace KhangNghi_BE.Controllers
                 });
             }
 
+            if(!FileUtils.CheckAllowedExtension(images?.Select(i => i.FileName).ToArray() ?? [], _allowedExtension))
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Định dạng ảnh không hợp lệ"
+                });
+            }
+
             Product? existedProduct = await _productService.GetByIdAsync(product.ProductId);
             if(existedProduct != null)
             {
@@ -117,9 +127,12 @@ namespace KhangNghi_BE.Controllers
                 });
             }
 
+            List<string> imageUrls = new List<string>();
+            
             if (images != null)
             {
-                string uploadPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), _rootFolder, _imageFolder));
+                string uploadPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(),
+                    _rootFolder, _imageFolder, _productFolder, product.ProductId));
                 foreach (IFormFile image in images)
                 {
                     string fileName = product.ProductId + "-" 
@@ -129,15 +142,12 @@ namespace KhangNghi_BE.Controllers
                     bool fileResult = await FileUtils.UploadFileAsync(image, uploadPath, fileName);
                     if(fileResult)
                     {
-                        product.Images.Add(new ProductVM.ProductImage
-                        {
-                            ImageUrl = $"/Files/Images/{fileName}"
-                        });
+                        imageUrls.Add($"/{_rootFolder}/{_imageFolder}/{_productFolder}/{product.ProductId}{fileName}");
                     }
                 }
             }
 
-            bool result = await _productService.CreateAsync(product);
+            bool result = await _productService.CreateAsync(product, imageUrls);
 
             ApiResponse response = new ApiResponse
             {
@@ -151,15 +161,17 @@ namespace KhangNghi_BE.Controllers
                 return Ok(response);
             }
 
-            foreach(var image in product.Images)
+            foreach(var image in imageUrls)
             {
-                if(image.ImageUrl != null)
-                {
-                    string fileName = image.ImageUrl.Replace("/Files/Images/", string.Empty);
-                    string path = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), _rootFolder, _imageFolder, fileName));
-                    FileUtils.DeleteFile(path);
-                }
+                string fileName = image.Replace(
+                    $"/{_rootFolder}/{_imageFolder}/{_productFolder}/{product.ProductId}", string.Empty
+                );
+
+                string path = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(),
+                    _rootFolder, _imageFolder, _productFolder, product.ProductId, fileName));
+                FileUtils.DeleteFile(path);
             }
+
             return BadRequest(response);
         }
 

@@ -32,14 +32,7 @@ namespace KhangNghi_BE.Data.ViewModels
 
         public string[]? CatalogIds { get; set; }
 
-        public List<ProductImage> Images { get; set; } = new List<ProductImage>();
-
         public List<Specification> Specs { get; set; } = new List<Specification>();
-
-        public class ProductImage
-        {
-            public string ImageUrl { get; set; } = null!;
-        }
 
         public class Specification
         {

@@ -11,7 +11,7 @@ namespace KhangNghi_BE.Services
         Task<PagedList<Product>> GetByNameAsync(string? sortBy, string search, int page, int pageSize);
         Task<Product?> GetByIdAsync(string id);
 
-        Task<bool> CreateAsync(ProductVM product);
+        Task<bool> CreateAsync(ProductVM product, List<string> imageUrls);
         Task<bool> UpdateAsync(ProductVM product);
         Task<bool> DeleteAsync(string id);
     }

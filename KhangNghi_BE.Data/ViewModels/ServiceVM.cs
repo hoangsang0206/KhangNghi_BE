@@ -5,9 +5,9 @@ namespace KhangNghi_BE.Data.ViewModels
     public class ServiceVM
     {
         [Required(ErrorMessage = "Mã dịch vụ không để trống")]
-        [MaxLength(50, ErrorMessage = "Mã danh mục không quá 50 kí tự")]
+        [MaxLength(50, ErrorMessage = "Mã dịch vụ không quá 50 kí tự")]
         [RegularExpression(@"^[a-zA-Z0-9-_]*$",
-            ErrorMessage = "Mã danh mục không chứa kí tự đặc biệt (ngoại trừ -, _) và khoảng trống")]
+            ErrorMessage = "Mã dịch vụ không chứa kí tự đặc biệt (ngoại trừ -, _) và khoảng trống")]
         public string ServiceId { get; set; } = null!;
 
         [Required(ErrorMessage = "Tên dịch vụ không để trống")]

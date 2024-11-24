@@ -24,7 +24,6 @@
                 return false;
             }
 
-            return false;
         }
         public static async Task<bool> UploadFileAsync(IFormFile file, string path, string fileName)
         {
@@ -47,8 +46,6 @@
             {
                 return false;
             }
-
-            return false;
         }
 
 
@@ -68,6 +65,26 @@
             {
                 return false;
             }
+        }
+
+        public static bool CheckAllowedExtension(string fileName, string[] allowedExtensions)
+        {
+            string extension = Path.GetExtension(fileName).ToLower();
+            return allowedExtensions.Contains(extension);
+        }
+
+        public static bool CheckAllowedExtension(string[] fileName, string[] allowedExtensions)
+        {
+            foreach (string file in fileName)
+            {
+                string extension = Path.GetExtension(file).ToLower();
+                if (!allowedExtensions.Contains(extension))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

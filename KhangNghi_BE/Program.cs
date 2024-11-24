@@ -36,12 +36,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add CORS policy
 builder.Services.AddCors(options =>
 {
+    string[]? allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+
     options.AddPolicy("AllowSpecificOrigins", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        if(allowedOrigins != null && allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
     });
 });
 
@@ -71,7 +76,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseCors();
+app.UseCors("AllowSpecificOrigins");
 
 app.MapControllers();
 

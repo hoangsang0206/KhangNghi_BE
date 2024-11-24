@@ -59,6 +59,7 @@ public class AccountController : ControllerBase
                 Data = new
                 {
                     token,
+                    role = user.RoleId,
                     authorized = new
                     {
                         hasAllPermission = user.Group?.HasAllPermission,
@@ -115,6 +116,7 @@ public class AccountController : ControllerBase
                 Data = new
                 {
                     token,
+                    role = user.RoleId,
                     authorized = new
                     {
                         hasAllPermission = user.Group?.HasAllPermission,
@@ -242,9 +244,10 @@ public class AccountController : ControllerBase
                 Data = new
                 {
                     token = user != null ? await GenerateToken(user) : null,
+                    role = user?.RoleId,
                     authorized = new
                     {
-                        hasAllPermission = user.Group?.HasAllPermission,
+                        hasAllPermission = user?.Group?.HasAllPermission,
                         functions = authorizedFunctions.Any() ? authorizedFunctions.Select(f => new
                         {
                             f.FuncId,
