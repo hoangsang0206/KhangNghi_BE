@@ -55,7 +55,7 @@ namespace KhangNghi_BE.Services.Services
                 .ToPagedListAsync(page, pageSize);
         }
 
-        public async Task<bool> CreateAsync(ProductVM product, List<string> imageUrls)
+        public async Task<bool> CreateAsync(ProductVM product)
         {
             Product _product = new Product
             {
@@ -87,12 +87,15 @@ namespace KhangNghi_BE.Services.Services
                 }
             }
 
-            foreach (string image in imageUrls)
+            if(product.Images != null)
             {
-                _product.ProductImages.Add(new ProductImage
+                foreach (string image in product.Images)
                 {
-                    ImageUrl = image
-                });
+                    _product.ProductImages.Add(new ProductImage
+                    {
+                        ImageUrl = image
+                    });
+                }
             }
 
             foreach (var spec in product.Specs)

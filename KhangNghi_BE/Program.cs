@@ -101,6 +101,28 @@ using (IServiceScope scope = app.Services.CreateScope())
         await context.Roles.AddAsync(new Role { RoleId = "admin", RoleName = "Admin" });
         await context.SaveChangesAsync();
     }
+
+    if (!await context.UserGroups.AnyAsync(g => g.GroupId == "admin"))
+    {
+        await context.UserGroups.AddAsync(new UserGroup { GroupId = "admin", GroupName = "Admin", HasAllPermission = true });
+        await context.SaveChangesAsync();
+    }
+
+    IAccountService accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
+
+    if(await accountService.GetUserByUsernameAsync("admin") == null)
+    {
+        await accountService.CreateUserAsync(new User
+        {
+            UserId = Guid.NewGuid().ToString(),
+            Username = "admin",
+            CreateAt = DateTime.UtcNow,
+            RoleId = "admin",
+            Email = "admin@khangnghi.com",
+            IsActive = true,
+            GroupId = "admin"
+        }, "admin@123");
+    }
 }
 
 app.Run();

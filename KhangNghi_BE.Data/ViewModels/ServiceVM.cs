@@ -24,5 +24,7 @@ namespace KhangNghi_BE.Data.ViewModels
         public string? CalculationUnit { get; set; }
 
         public string? CatalogId { get; set; }
+
+        public string? MainImage { get; set; }
     }
 }

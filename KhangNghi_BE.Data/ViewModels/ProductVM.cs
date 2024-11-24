@@ -32,6 +32,8 @@ namespace KhangNghi_BE.Data.ViewModels
 
         public string[]? CatalogIds { get; set; }
 
+        public string[]? Images { get; set; } 
+
         public List<Specification> Specs { get; set; } = new List<Specification>();
 
         public class Specification

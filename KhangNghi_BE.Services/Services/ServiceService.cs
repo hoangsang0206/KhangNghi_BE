@@ -42,7 +42,7 @@ namespace KhangNghi_BE.Services.Services
                 .FirstOrDefaultAsync(x => x.ServiceId == id);
         }
 
-        public async Task<bool> CreateAsync(ServiceVM service, string imageUrl)
+        public async Task<bool> CreateAsync(ServiceVM service)
         {
             Service _service = new Service
             {
@@ -58,7 +58,7 @@ namespace KhangNghi_BE.Services.Services
                 {
                     new ServiceImage
                     {
-                        ImageUrl = imageUrl
+                        ImageUrl = service.MainImage
                     }
                 }
             };

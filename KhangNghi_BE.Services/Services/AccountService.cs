@@ -3,6 +3,7 @@ using KhangNghi_BE.Data.ViewModels;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Win32;
 
 namespace KhangNghi_BE.Services.Services
 {
@@ -184,6 +185,43 @@ namespace KhangNghi_BE.Services.Services
                 }
 
                 return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+
+        public async Task<bool> CreateUserAsync(User user, string password)
+        {
+            string? connectionString = _configuration.GetSection("ConnectionString").Value;
+            string createLoginSql = $"Create Login [{user.Username}] With Password = N'{password}'";
+            string createUserSql = $"Create User [{user.Username}] For Login [{user.Username}]";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand(createLoginSql, connection))
+                    {
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+
+                    using (SqlCommand cmd = new SqlCommand(createUserSql, connection))
+                    {
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+
+                    await connection.CloseAsync();
+
+                    await _context.Users.AddAsync(user);
+                    bool result = await _context.SaveChangesAsync() > 0;
+
+                    return result;
+                }
             }
             catch (Exception e)
             {

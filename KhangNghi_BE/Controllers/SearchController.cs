@@ -13,6 +13,8 @@ namespace KhangNghi_BE.Controllers
         private readonly IProductService _productService;
         private readonly IServiceService _serviceService;
 
+        private readonly int _pageSize = 20;
+
         public SearchController(IProductService productService, IServiceService serviceService)
         {
             _productService = productService;
@@ -20,9 +22,20 @@ namespace KhangNghi_BE.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Search(string query)
+        public async Task<IActionResult> Search(string query, int productsPage, int servicesPage)
         {
-            return Ok();
+            PagedList<Product> products = await _productService.GetByNameAsync(null, query, productsPage,  _pageSize);
+            PagedList<Service> services = await _serviceService.SearchByNameAsync(query, servicesPage, _pageSize);
+
+            return Ok(new ApiResponse
+            {
+                Success = true,
+                Data = new
+                {
+                    Products = products,
+                    Services = services
+                }
+            });
         }
     }
 }

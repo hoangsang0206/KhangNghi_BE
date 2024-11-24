@@ -14,5 +14,7 @@ namespace KhangNghi_BE.Services
         Task<User?> GetUserAsync(string userId);
         Task<User?> GetUserByUsernameAsync(string username);
         Task<bool> ChangePasswordAsync(string userId, ChangePassword password);
+
+        Task<bool> CreateUserAsync(User user, string password);
     }
 }

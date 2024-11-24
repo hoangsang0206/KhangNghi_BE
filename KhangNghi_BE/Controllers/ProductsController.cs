@@ -96,7 +96,7 @@ namespace KhangNghi_BE.Controllers
 
         [HttpPost("create")]
         [AdminAuthorize(Code = Functions.CreateProduct)]
-        public async Task<IActionResult> CreateProduct([FromForm] ProductVM product, List<IFormFile>? images)
+        public async Task<IActionResult> CreateProduct([FromBody] ProductVM product)
         {
             if(!ModelState.IsValid)
             {
@@ -105,15 +105,6 @@ namespace KhangNghi_BE.Controllers
                     Success = false,
                     Message = "Dữ liệu không hợp lệ",
                     Data = ModelState
-                });
-            }
-
-            if(!FileUtils.CheckAllowedExtension(images?.Select(i => i.FileName).ToArray() ?? [], _allowedExtension))
-            {
-                return BadRequest(new ApiResponse
-                {
-                    Success = false,
-                    Message = "Định dạng ảnh không hợp lệ"
                 });
             }
 
@@ -127,27 +118,7 @@ namespace KhangNghi_BE.Controllers
                 });
             }
 
-            List<string> imageUrls = new List<string>();
-            
-            if (images != null)
-            {
-                string uploadPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(),
-                    _rootFolder, _imageFolder, _productFolder, product.ProductId));
-                foreach (IFormFile image in images)
-                {
-                    string fileName = product.ProductId + "-" 
-                        + Guid.NewGuid().ToString() 
-                        + Path.GetExtension(image.FileName);
-
-                    bool fileResult = await FileUtils.UploadFileAsync(image, uploadPath, fileName);
-                    if(fileResult)
-                    {
-                        imageUrls.Add($"/{_rootFolder}/{_imageFolder}/{_productFolder}/{product.ProductId}{fileName}");
-                    }
-                }
-            }
-
-            bool result = await _productService.CreateAsync(product, imageUrls);
+            bool result = await _productService.CreateAsync(product);
 
             ApiResponse response = new ApiResponse
             {
@@ -159,17 +130,6 @@ namespace KhangNghi_BE.Controllers
             if(result)
             {
                 return Ok(response);
-            }
-
-            foreach(var image in imageUrls)
-            {
-                string fileName = image.Replace(
-                    $"/{_rootFolder}/{_imageFolder}/{_productFolder}/{product.ProductId}", string.Empty
-                );
-
-                string path = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(),
-                    _rootFolder, _imageFolder, _productFolder, product.ProductId, fileName));
-                FileUtils.DeleteFile(path);
             }
 
             return BadRequest(response);
