@@ -318,7 +318,7 @@ public class AccountController : ControllerBase
                     new Claim(ClaimTypes.Email, user.Email ?? ""),
                     new Claim(JwtRegisteredClaimNames.Jti, tokenId),
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(1),
+                Expires = DateTime.UtcNow.AddMinutes(60),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

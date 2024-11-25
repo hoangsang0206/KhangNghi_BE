@@ -61,7 +61,7 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpGet("by-id")]
         [AdminAuthorize(Code = Functions.ViewInvoices)]
         public async Task<IActionResult> GetInvoiceById(string id)
         {

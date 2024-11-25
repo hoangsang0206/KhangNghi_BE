@@ -44,7 +44,7 @@ namespace KhangNghi_BE.Services.Services
 
         public async Task<User?> RegisterAsync(Register register)
         {
-            string? connectionString = _configuration.GetSection("ConnectionString").Value;
+            string? connectionString = _configuration.GetSection("ConnectionString").Value + "Pooling=false;";
             string createLoginSql = $"Create Login [{register.Username}] With Password = N'{register.Password}'";
             string createUserSql = $"Create User [{register.Username}] For Login [{register.Username}]";
             
