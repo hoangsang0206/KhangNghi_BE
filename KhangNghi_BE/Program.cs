@@ -63,6 +63,7 @@ builder.Services.AddScoped<IServiceCatalogService, ServiceCalalogService>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IWarehouseService, WarehouseService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 var app = builder.Build();
 
@@ -122,6 +123,18 @@ using (IServiceScope scope = app.Services.CreateScope())
             IsActive = true,
             GroupId = "admin"
         }, "admin@123");
+    }
+
+    if (!await context.CustomerTypes.AnyAsync(c => c.CusTypeId == "company"))
+    {
+        await context.CustomerTypes.AddAsync(new CustomerType { CusTypeId = "company", CusTypeName = "Doanh nghiệp" });
+        await context.SaveChangesAsync();
+    }
+
+    if (!await context.CustomerTypes.AnyAsync(c => c.CusTypeId == "individual"))
+    {
+        await context.CustomerTypes.AddAsync(new CustomerType { CusTypeId = "individual", CusTypeName = "Cá nhân" });
+        await context.SaveChangesAsync();
     }
 }
 
