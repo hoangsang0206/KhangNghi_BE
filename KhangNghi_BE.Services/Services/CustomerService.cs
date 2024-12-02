@@ -14,8 +14,8 @@ namespace KhangNghi_BE.Services.Services
         public async Task<PagedList<Customer>> GetAsync(string? sortBy, string? filterBy, int page, int pageSize)
         {
             return await _context.Customers
-                .Include(c => c.Address)
                 .Where(c => string.IsNullOrEmpty(filterBy) || c.FullName.Contains(filterBy))
+                .SelectCustomer()
                 .OrderBy(c => sortBy)
                 .ToPagedListAsync(page, pageSize);
         }
@@ -23,7 +23,7 @@ namespace KhangNghi_BE.Services.Services
         public Task<Customer?> GetByIdAsync(string id)
         {
             return _context.Customers
-                .Include(c => c.Address)
+                .SelectCustomer()
                 .FirstOrDefaultAsync(c => c.CustomerId == id);
         }
 
@@ -41,8 +41,8 @@ namespace KhangNghi_BE.Services.Services
         public async Task<IEnumerable<Customer>> SearchByPhoneAsync(string phone)
         {
             return await _context.Customers
-                .Include(c => c.Address)
                 .Where(c => c.PhoneNumber.Contains(phone))
+                .SelectCustomer()
                 .ToListAsync();
         }
 
