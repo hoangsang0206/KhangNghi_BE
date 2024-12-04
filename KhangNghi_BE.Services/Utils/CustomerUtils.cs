@@ -20,7 +20,13 @@ namespace KhangNghi_BE.Services.Utils
                     PositionInCompany = c.PositionInCompany,
                     MemberSince = c.MemberSince,
                     TaxCode = c.TaxCode,
-                    Address = c.Address
+                    Address = new Address
+                    {
+                        Street = c.Address.Street,
+                        Ward = c.Address.Ward,
+                        District = c.Address.District,
+                        City = c.Address.City
+                    }
                 });
         }
     }

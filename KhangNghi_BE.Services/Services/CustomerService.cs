@@ -23,8 +23,9 @@ namespace KhangNghi_BE.Services.Services
         public Task<Customer?> GetByIdAsync(string id)
         {
             return _context.Customers
+                .Where(c => c.CustomerId == id)
                 .SelectCustomer()
-                .FirstOrDefaultAsync(c => c.CustomerId == id);
+                .FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<CustomerType>> GetCustomerTypesAsync()
