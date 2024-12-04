@@ -22,6 +22,7 @@ namespace KhangNghi_BE.Services.Utils
                     TaxCode = c.TaxCode,
                     Address = new Address
                     {
+                        AddressId = c.Address.AddressId,
                         Street = c.Address.Street,
                         Ward = c.Address.Ward,
                         District = c.Address.District,

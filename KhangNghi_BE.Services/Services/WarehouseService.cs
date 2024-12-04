@@ -1,5 +1,6 @@
 ﻿using KhangNghi_BE.Data.Models;
 using KhangNghi_BE.Data.ViewModels;
+using KhangNghi_BE.Services.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace KhangNghi_BE.Services.Services
@@ -14,14 +15,16 @@ namespace KhangNghi_BE.Services.Services
 
         public async Task<IEnumerable<Warehouse>> GetAsync(string? sortBy)
         {
-            return await _context.Warehouses.ToListAsync();
+            return await _context.Warehouses
+                .SelectWarehouse()
+                .ToListAsync();
         }
 
         public Task<Warehouse?> GetByIdAsync(string id)
         {
             return _context.Warehouses
                 .Where(w => w.WarehouseId == id)
-                .Include(w => w.Address)
+                .SelectWarehouse()
                 .FirstOrDefaultAsync();
         }
 
