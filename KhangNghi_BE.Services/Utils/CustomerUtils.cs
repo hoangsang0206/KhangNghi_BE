@@ -20,6 +20,7 @@ namespace KhangNghi_BE.Services.Utils
                     PositionInCompany = c.PositionInCompany,
                     MemberSince = c.MemberSince,
                     TaxCode = c.TaxCode,
+                    AddressId = c.AddressId,
                     Address = new Address
                     {
                         AddressId = c.Address.AddressId,
