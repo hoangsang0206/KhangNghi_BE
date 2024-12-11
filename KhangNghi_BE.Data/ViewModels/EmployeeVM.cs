@@ -8,8 +8,10 @@ namespace KhangNghi_BE.Data.ViewModels
         public string FullName { get; set; } = null!;
 
         [Required(ErrorMessage = "Số điện thoại không để trống")]
+        [RegularExpression(@"^(0[1-9]\d{8,9})$|^(84[1-9]\d{8,9})$|^\+84[1-9]\d{8,9}$", ErrorMessage = "* Số điện thoại không hợp lệ")]
         public string PhoneNumber { get; set; } = null!;
 
+        [EmailAddress(ErrorMessage = "* Email không hợp lệ")]
         public string? Email { get; set; }
 
         [Required(ErrorMessage = "Giới tính không để trống")]
