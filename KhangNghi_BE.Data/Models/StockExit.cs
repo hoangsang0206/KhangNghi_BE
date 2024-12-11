@@ -19,5 +19,7 @@ public partial class StockExit
 
     public virtual Contract? Contract { get; set; }
 
+    public virtual ICollection<StockExitDetail> StockExitDetails { get; set; } = new List<StockExitDetail>();
+
     public virtual Warehouse Warehouse { get; set; } = null!;
 }

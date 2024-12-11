@@ -1,4 +1,5 @@
 ﻿using KhangNghi_BE.Contants;
+using KhangNghi_BE.Data;
 using KhangNghi_BE.Data.Models;
 using KhangNghi_BE.Data.ViewModels;
 using KhangNghi_BE.Filters;
@@ -13,13 +14,16 @@ namespace KhangNghi_BE.Controllers
     public class ContractsController : ControllerBase
     {
         private readonly IContractService _contractService;
+        private readonly IInvoiceService _invoiceService;
+
         private readonly string _rootFolder = "Files";
         private readonly string _docsFolder = "Documents";
         private readonly int _pageSize = 20;
 
-        public ContractsController(IContractService contractService)
+        public ContractsController(IContractService contractService, IInvoiceService invoiceService)
         {
             _contractService = contractService;
+            _invoiceService = invoiceService;
         }
 
         [HttpGet]
@@ -114,6 +118,16 @@ namespace KhangNghi_BE.Controllers
         [AdminAuthorize(Code = Functions.DeleteContract)]
         public async Task<IActionResult> Delete(string id)
         {
+            Invoice? invoice = await _invoiceService.GetByIdAsync(id);
+            if (invoice != null)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Hợp đồng này đã được tạo hóa đơn, không thể xóa"
+                });
+            }
+
             bool result = await _contractService.DeleteAsync(id);
             ApiResponse response = new ApiResponse
             {

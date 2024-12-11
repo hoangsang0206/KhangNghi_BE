@@ -17,6 +17,8 @@ public partial class StockEntry
 
     public decimal TotalAmout { get; set; }
 
+    public virtual ICollection<StockEntryDetail> StockEntryDetails { get; set; } = new List<StockEntryDetail>();
+
     public virtual Supplier Supplier { get; set; } = null!;
 
     public virtual Warehouse Warehouse { get; set; } = null!;

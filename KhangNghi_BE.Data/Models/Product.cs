@@ -33,6 +33,10 @@ public partial class Product
 
     public virtual ICollection<ProductsInWarehouse> ProductsInWarehouses { get; set; } = new List<ProductsInWarehouse>();
 
+    public virtual ICollection<StockEntryDetail> StockEntryDetails { get; set; } = new List<StockEntryDetail>();
+
+    public virtual ICollection<StockExitDetail> StockExitDetails { get; set; } = new List<StockExitDetail>();
+
     public virtual ICollection<ProductCatalog> Catalogs { get; set; } = new List<ProductCatalog>();
 
     public virtual ICollection<Promotion> Promotions { get; set; } = new List<Promotion>();
