@@ -23,7 +23,6 @@ namespace KhangNghi_BE.Services.Services
         {
             return await _context.Invoices
                 .Where(i => i.InvoiceId == id)
-                .Include(i => i.PromotionUsages)
                 .FirstOrDefaultAsync();
         }
 

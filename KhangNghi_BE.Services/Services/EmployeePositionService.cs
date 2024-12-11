@@ -1,32 +1,67 @@
 ﻿using KhangNghi_BE.Data.Models;
+using KhangNghi_BE.Data.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace KhangNghi_BE.Services.Services
 {
     public class EmployeePositionService : IEmployeePositionService
     {
-        public Task<bool> CreateAsync(EmployeePosition employeePosition)
+        private readonly KhangNghiContext _context;
+
+        public EmployeePositionService(KhangNghiContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Task<bool> DeleteAsync(string id)
+        public async Task<bool> CreateAsync(EmployeePositionVM employeePosition)
         {
-            throw new NotImplementedException();
+            EmployeePosition position = new EmployeePosition
+            {
+                PositionId = employeePosition.PositionId,
+                PositionName = employeePosition.PositionName
+            };
+
+            await _context.EmployeePositions.AddAsync(position);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        public Task<IEnumerable<EmployeePosition>> GetAsync()
+        public async Task<bool> DeleteAsync(string id)
         {
-            throw new NotImplementedException();
+            var position = await GetByIdAsync(id);
+
+            if (position == null)
+            {
+                return false;
+            }
+
+            _context.EmployeePositions.Remove(position);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        public Task<EmployeePosition> GetByIdAsync(string id)
+        public async Task<IEnumerable<EmployeePosition>> GetAsync()
         {
-            throw new NotImplementedException();
+            
+            return await _context.EmployeePositions.ToListAsync();
         }
 
-        public Task<bool> UpdateAsync(string id, EmployeePosition employeePosition)
+        public async Task<EmployeePosition?> GetByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            return await _context.EmployeePositions
+                .FirstOrDefaultAsync(x => x.PositionId == id);
+        }
+
+        public async Task<bool> UpdateAsync(EmployeePositionVM employeePosition)
+        {
+            var position = await GetByIdAsync(employeePosition.PositionId);
+
+            if (position == null)
+            {
+                return false;
+            }
+
+            position.PositionName = employeePosition.PositionName;
+
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

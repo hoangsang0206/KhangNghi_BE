@@ -1,4 +1,6 @@
 ﻿using KhangNghi_BE.Data.Models;
+using KhangNghi_BE.Data.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace KhangNghi_BE.Services.Services
 {
@@ -11,30 +13,56 @@ namespace KhangNghi_BE.Services.Services
             _context = context;
         }
 
-        public async Task<bool> CreateAsync(Department department)
+        public async Task<bool> CreateAsync(DepartmentVM department)
         {
+            Department newDepartment = new Department
+            {
+                DepartmentId = department.DepartmentId,
+                DepartmentName = department.DepartmentName,
+                Location = department.Location
+            };
 
-            return false;
+            _context.Departments.Add(newDepartment);
+
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        public Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(string id)
         {
-            throw new NotImplementedException();
+            Department? department = await  GetByIdAsync(id);
+            if (department != null)
+            {
+                return false;
+            }
+
+            _context.Departments.Remove(department);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        public Task<IEnumerable<Department>> GetAsync()
+        public async Task<IEnumerable<Department>> GetAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Departments.ToListAsync();
         }
 
-        public Task<Department> GetByIdAsync(string id)
+        public async Task<Department?> GetByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            return await _context.Departments
+                .Where(d => d.DepartmentId == id)
+                .FirstOrDefaultAsync();
         }
 
-        public Task<bool> UpdateAsync(string id, Department department)
+        public async Task<bool> UpdateAsync(DepartmentVM department)
         {
-            throw new NotImplementedException();
+            Department? departmentToUpdate = await GetByIdAsync(department.DepartmentId);
+            if (departmentToUpdate == null)
+            {
+                return false;
+            }
+
+            departmentToUpdate.DepartmentName = department.DepartmentName;
+            departmentToUpdate.Location = department.Location;
+
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

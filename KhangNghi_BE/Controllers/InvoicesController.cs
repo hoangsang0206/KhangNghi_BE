@@ -3,8 +3,10 @@ using KhangNghi_BE.Data;
 using KhangNghi_BE.Data.Models;
 using KhangNghi_BE.Data.ViewModels;
 using KhangNghi_BE.Filters;
+using KhangNghi_BE.Payment.PaymentServices;
 using KhangNghi_BE.Services;
 using Microsoft.AspNetCore.Mvc;
+using KhangNghi_BE.Payment.PaymentModels;
 
 namespace KhangNghi_BE.Controllers
 {
@@ -13,17 +15,20 @@ namespace KhangNghi_BE.Controllers
     public class InvoicesController : ControllerBase
     {
         private readonly IInvoiceService _invoiceService;
+        private readonly IVNPayService _vnpayService;
         private readonly IContractService _contractService;
         private readonly IPromotionService _promotionService;
         private readonly int _pageSize = 20;
 
         public InvoicesController(IInvoiceService invoiceService, 
             IContractService contractService,
-            IPromotionService promotionService)
+            IPromotionService promotionService,
+            IVNPayService vNPayService)
         {
             _invoiceService = invoiceService;
             _contractService = contractService;
             _promotionService = promotionService;
+            _vnpayService = vNPayService;
         }
 
         [HttpGet]
@@ -150,6 +155,41 @@ namespace KhangNghi_BE.Controllers
             {
                 Success = false,
                 Message = "Tạo hóa đơn thất bại"
+            });
+        }
+
+        [HttpPost("create-payment")]
+        [AdminAuthorize(Code = Functions.CreateInvoice)]
+        public async Task<IActionResult> CreatePayment([FromQuery] string invoiceId)
+        {
+            Invoice? invoice = await _invoiceService.GetByIdAsync(invoiceId);
+            if (invoice == null)
+            {
+                return NotFound(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Không tìm thấy hóa đơn"
+                });
+            }
+
+            var model = new VNPayPaymentInformationModel
+            {
+                OrderId = invoice.InvoiceId,
+                Amount = (double)invoice.TotalAmout,
+                Name = "Hóa đơn " + invoice.InvoiceId,
+                OrderDescription = "Thanh toan hoa don: " + invoice.InvoiceId,
+                OrderType = "other"
+            };
+
+            var url = _vnpayService.CreatePaymentUrl(model, HttpContext);
+            
+            return Ok(new ApiResponse
+            {
+                Success = true,
+                Data = new 
+                {
+                    PaymentUrl = url
+                }
             });
         }
 
