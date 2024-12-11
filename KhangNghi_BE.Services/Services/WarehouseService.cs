@@ -132,6 +132,13 @@ namespace KhangNghi_BE.Services.Services
             .ToPagedListAsync(page, pageSize);
         }
 
+        public async Task<IEnumerable<StockEntry>> GetStockEntriesBySupplierIdAsync(string supplierId)
+        {
+            return await _context.StockEntries
+                .Where(s => s.SupplierId == supplierId)
+                .ToListAsync();
+        }
+
         public async Task<StockEntry?> GetImportSlipByIdAsync(string id)
         {
             return await _context.StockEntries
