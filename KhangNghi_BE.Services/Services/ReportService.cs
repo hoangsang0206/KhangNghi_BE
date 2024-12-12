@@ -27,7 +27,7 @@ namespace KhangNghi_BE.Services.Services
             };
         }
 
-        public async Task<ReportVM> GetReportAsync(DateTime fromDate, DateTime toDate)
+        public ReportVM GetReport(DateTime fromDate, DateTime toDate)
         {
             var months = Enumerable.Range(0, (toDate.Year - fromDate.Year) * 12 + toDate.Month - fromDate.Month + 1)
                 .Select(i => fromDate.AddMonths(i))
@@ -45,12 +45,23 @@ namespace KhangNghi_BE.Services.Services
                         && c.CreateAt.Value.Year == m.Year && c.CreateAt.Value.Month == m.Month)
                     .Include(c => c.ContractDetails)
                     .Include(c => c.Invoice)
-                    .ToListAsync();
+                    .ToList();
 
-                
+                int totalContracts = contracts.Count();
+                int totalSoldProductQuantity = contracts.Sum(c => c.ContractDetails
+                        .Where(cd => cd.ProductId != null).Sum(cd => cd.Quantity));
+                int totalProvidedServices = contracts.Sum(c => c.ContractDetails
+                        .Count(cd => cd.ServiceId != null));
+
                 return new MonthReport
                 {
-                    
+                    Month = m.Month,
+                    Year = m.Year,
+                    NewCustomers = newCustomers,
+                    TotalContracts = totalContracts,
+                    TotalSoldProductQuantity = totalSoldProductQuantity,
+                    TotalProvidedServices = totalProvidedServices,
+                    TotalRevenue = contracts.Sum(c => c.Invoice?.TotalAmout ?? 0)
                 };
             }).ToList();
 
@@ -58,7 +69,11 @@ namespace KhangNghi_BE.Services.Services
             {
                 FromDate = fromDate,
                 ToDate = toDate,
-                
+                TotalContracts = monthReports.Sum(m => m.TotalContracts),
+                TotalRevenue = monthReports.Sum(m => m.TotalRevenue),
+                TotalSoldProductQuantity = monthReports.Sum(m => m.TotalSoldProductQuantity),
+                TotalProvidedServices = monthReports.Sum(m => m.TotalProvidedServices),
+                MonthReports = monthReports
             };
         }
     }

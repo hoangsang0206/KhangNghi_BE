@@ -25,5 +25,15 @@ namespace KhangNghi_BE.Controllers
                 Data = await _reportService.GetAllSummaryAsync()
             });
         }
+
+        [HttpGet("date-range")]
+        public IActionResult GetReport(DateTime fromDate, DateTime? toDate)
+        {
+            return Ok(new ApiResponse
+            {
+                Success = true,
+                Data = _reportService.GetReport(fromDate, toDate ?? DateTime.Now)
+            });
+        }
     }
 }

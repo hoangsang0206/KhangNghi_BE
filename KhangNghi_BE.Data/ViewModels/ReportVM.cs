@@ -5,7 +5,7 @@
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
         public int TotalContracts { get; set; }
-        public int TotalRevenue { get; set; }
+        public decimal TotalRevenue { get; set; }
         public int TotalSoldProductQuantity { get; set; }
         public int TotalProvidedServices { get; set; }
         public List<MonthReport> MonthReports { get; set; } = new List<MonthReport>();
@@ -19,6 +19,6 @@
         public int TotalContracts { get; set; }
         public int TotalSoldProductQuantity { get; set; }
         public int TotalProvidedServices { get; set; }
-        public int TotalRevenue { get; set; }
+        public decimal TotalRevenue { get; set; }
     }
 }
