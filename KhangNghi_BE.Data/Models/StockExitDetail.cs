@@ -13,6 +13,8 @@ public partial class StockExitDetail
 
     public decimal UnitPrice { get; set; }
 
+    public int Id { get; set; }
+
     public virtual StockExit Exit { get; set; } = null!;
 
     public virtual Product Product { get; set; } = null!;

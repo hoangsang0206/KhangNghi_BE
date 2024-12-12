@@ -614,7 +614,7 @@ public partial class KhangNghiContext : DbContext
 
         modelBuilder.Entity<PromotionUsage>(entity =>
         {
-            entity.HasKey(e => e.UsageId).HasName("PK__Promotio__29B19720356BD3B2");
+            entity.HasKey(e => e.UsageId).HasName("PK__Promotio__29B19720F3CA5E72");
 
             entity.Property(e => e.CustomerId)
                 .HasMaxLength(50)
@@ -630,16 +630,16 @@ public partial class KhangNghiContext : DbContext
             entity.HasOne(d => d.Customer).WithMany(p => p.PromotionUsages)
                 .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Promotion__Custo__06CD04F7");
+                .HasConstraintName("FK__Promotion__Custo__51300E55");
 
             entity.HasOne(d => d.Invoice).WithMany(p => p.PromotionUsages)
                 .HasForeignKey(d => d.InvoiceId)
-                .HasConstraintName("FK__Promotion__Invoi__05D8E0BE");
+                .HasConstraintName("FK__Promotion__Invoi__503BEA1C");
 
             entity.HasOne(d => d.Promotion).WithMany(p => p.PromotionUsages)
                 .HasForeignKey(d => d.PromotionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Promotion__Promo__04E4BC85");
+                .HasConstraintName("FK__Promotion__Promo__4F47C5E3");
         });
 
         modelBuilder.Entity<RefreshToken>(entity =>
@@ -755,7 +755,7 @@ public partial class KhangNghiContext : DbContext
 
         modelBuilder.Entity<StockEntryDetail>(entity =>
         {
-            entity.HasNoKey();
+            entity.HasKey(e => e.Id).HasName("PK__StockEnt__3214EC075F349F8B");
 
             entity.Property(e => e.EntryId)
                 .HasMaxLength(50)
@@ -765,12 +765,12 @@ public partial class KhangNghiContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.UnitPrice).HasColumnType("decimal(18, 0)");
 
-            entity.HasOne(d => d.Entry).WithMany()
+            entity.HasOne(d => d.Entry).WithMany(p => p.StockEntryDetails)
                 .HasForeignKey(d => d.EntryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__StockEntr__Entry__0E6E26BF");
 
-            entity.HasOne(d => d.Product).WithMany()
+            entity.HasOne(d => d.Product).WithMany(p => p.StockEntryDetails)
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__StockEntr__Produ__0D7A0286");
@@ -805,7 +805,7 @@ public partial class KhangNghiContext : DbContext
 
         modelBuilder.Entity<StockExitDetail>(entity =>
         {
-            entity.HasNoKey();
+            entity.HasKey(e => e.Id).HasName("PK__StockExi__3214EC0751AF356D");
 
             entity.Property(e => e.ExitId)
                 .HasMaxLength(50)
@@ -815,12 +815,12 @@ public partial class KhangNghiContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.UnitPrice).HasColumnType("decimal(18, 0)");
 
-            entity.HasOne(d => d.Exit).WithMany()
+            entity.HasOne(d => d.Exit).WithMany(p => p.StockExitDetails)
                 .HasForeignKey(d => d.ExitId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__StockExit__ExitI__17F790F9");
 
-            entity.HasOne(d => d.Product).WithMany()
+            entity.HasOne(d => d.Product).WithMany(p => p.StockExitDetails)
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__StockExit__Produ__17036CC0");

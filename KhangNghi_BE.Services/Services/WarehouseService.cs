@@ -100,19 +100,79 @@ namespace KhangNghi_BE.Services.Services
 
         #region Warehouse Import
 
-        public Task<PagedList<StockEntry>> GetImportSlipsAsync(string? warehouseId, string? sortBy, int page, int pageSize)
+        public async Task<PagedList<StockEntry>> GetImportSlipsAsync(string? warehouseId, string? sortBy, int page, int pageSize)
         {
-            throw new NotImplementedException();
+            IQueryable<StockEntry> query = warehouseId != null
+                ? _context.StockEntries
+                : _context.StockEntries.Where(s => s.WarehouseId == warehouseId);
+
+            return await query.Select(s => new StockEntry
+            {
+                EntryId = s.EntryId,
+                EntryDate = s.EntryDate,
+                Note = s.Note,
+                TotalAmout = s.TotalAmout,
+                Supplier = new Supplier
+                {
+                    SupplierId = s.Supplier.SupplierId,
+                    SupplierName = s.Supplier.SupplierName,
+                },
+                Warehouse = new Warehouse
+                {
+                    WarehouseId = s.Warehouse.WarehouseId,
+                    WarehouseName = s.Warehouse.WarehouseName,
+                },
+                StockEntryDetails = s.StockEntryDetails.Select(d => new StockEntryDetail
+                {
+                    ProductId = d.ProductId,
+                    Quantity = d.Quantity,
+                    UnitPrice = d.UnitPrice,
+                }).ToList()
+            })
+            .ToPagedListAsync(page, pageSize);
         }
 
-        public Task<StockEntry?> GetImportSlipByIdAsync(string id)
+        public async Task<IEnumerable<StockEntry>> GetStockEntriesBySupplierIdAsync(string supplierId)
         {
-            throw new NotImplementedException();
+            return await _context.StockEntries
+                .Where(s => s.SupplierId == supplierId)
+                .ToListAsync();
         }
 
-        public Task<bool> CreateImportSlipAsync(StockEntry slip)
+        public async Task<StockEntry?> GetImportSlipByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            return await _context.StockEntries
+                .Where(s => s.EntryId == id)
+                .Select(s => new StockEntry
+                {
+                    EntryId = s.EntryId,
+                    EntryDate = s.EntryDate,
+                    Note = s.Note,
+                    TotalAmout = s.TotalAmout,
+                    Supplier = new Supplier
+                    {
+                        SupplierId = s.Supplier.SupplierId,
+                        SupplierName = s.Supplier.SupplierName,
+                    },
+                    Warehouse = new Warehouse
+                    {
+                        WarehouseId = s.Warehouse.WarehouseId,
+                        WarehouseName = s.Warehouse.WarehouseName,
+                    },
+                    StockEntryDetails = s.StockEntryDetails.Select(d => new StockEntryDetail
+                    {
+                        ProductId = d.ProductId,
+                        Quantity = d.Quantity,
+                        UnitPrice = d.UnitPrice,
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> CreateImportSlipAsync(StockEntry slip)
+        {
+            await _context.StockEntries.AddAsync(slip);
+            return await _context.SaveChangesAsync() > 0;
         }
 
         #endregion

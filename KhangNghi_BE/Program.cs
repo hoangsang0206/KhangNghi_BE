@@ -1,6 +1,8 @@
 ﻿using System.Text;
 using System.Text.Json.Serialization;
+using KhangNghi_BE.Data;
 using KhangNghi_BE.Data.Models;
+using KhangNghi_BE.Payment.PaymentServices;
 using KhangNghi_BE.Services;
 using KhangNghi_BE.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -63,7 +65,13 @@ builder.Services.AddScoped<IServiceCatalogService, ServiceCalalogService>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IWarehouseService, WarehouseService>();
+builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IVNPayService, VNPayService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IEmployeePositionService, EmployeePositionService>();
 
 var app = builder.Build();
 

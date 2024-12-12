@@ -25,10 +25,15 @@ namespace KhangNghi_BE.Filters
                 return;
             }
 
+            if (string.IsNullOrEmpty(Code))
+            {
+                return;
+            }
+
             IAuthorizationService _authorizeService = context.HttpContext.RequestServices
                 .GetRequiredService<IAuthorizationService>();
 
-            if(!_authorizeService.CheckPermissionAsync(userId, Code).Result)
+            if (!_authorizeService.CheckPermissionAsync(userId, Code).Result)
             {
                 context.Result = new UnauthorizedResult();
             }
