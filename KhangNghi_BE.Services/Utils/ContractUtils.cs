@@ -32,6 +32,7 @@ namespace KhangNghi_BE.Services.Utils
                     AddressId = c.Customer.AddressId,
                     Address = new Address
                     {
+                        AddressId = c.Customer.Address.AddressId,
                         Street = c.Customer.Address.Street,
                         Ward = c.Customer.Address.Ward,
                         District = c.Customer.Address.District,

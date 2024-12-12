@@ -34,22 +34,24 @@ namespace KhangNghi_BE.Services.Services
                 .Select(i => new { i.Year, i.Month })
                 .ToList();
 
-            var monthReports = months.Select(m => new MonthReport
+            var monthReports = months.Select(m =>
             {
-                //Year = m.Year,
-                //Month = m.Month,
-                //NewCustomers = _context.Customers
-                //    .Count(c => c.MemberSince != null && c.MemberSince.Year == m.Year && c.MemberSince.Month == m.Month),
-                //TotalContracts = _context.Contracts.Count(c => c.CreatedAt.Year == m.Year && c.CreatedAt.Month == m.Month),
-                //TotalSoldProductQuantity = _context.ContractDetails
-                //    .Where(cd => cd.Contract.CreatedAt.Year == m.Year && cd.Contract.CreatedAt.Month == m.Month)
-                //    .Sum(cd => cd.Quantity),
-                //TotalProvidedServices = _context.ContractServices
-                //    .Where(cs => cs.Contract.CreatedAt.Year == m.Year && cs.Contract.CreatedAt.Month == m.Month)
-                //    .Count(),
-                //TotalRevenue = _context.Invoices
-                //    .Where(i => i.CreatedAt.Year == m.Year && i.CreatedAt.Month == m.Month)
-                //    .Sum(i => i.TotalAmout)
+                var newCustomers = _context.Customers
+                    .Count(c => c.MemberSince.HasValue
+                        && c.MemberSince.Value.Year == m.Year && c.MemberSince.Value.Month == m.Month);
+
+                var contracts = _context.Contracts
+                    .Where(c => c.CreateAt.HasValue
+                        && c.CreateAt.Value.Year == m.Year && c.CreateAt.Value.Month == m.Month)
+                    .Include(c => c.ContractDetails)
+                    .Include(c => c.Invoice)
+                    .ToListAsync();
+
+                
+                return new MonthReport
+                {
+                    
+                };
             }).ToList();
 
             return new ReportVM

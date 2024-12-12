@@ -75,14 +75,17 @@ namespace KhangNghi_BE.Services.Services
 
         public async Task<bool> UpdateAsync(ContractVM contract)
         {
-            Contract? _contract = await GetByIdAsync(contract.ContractId);
+            Contract? _contract = await _context.Contracts
+                .Where(c => c.ContractId == contract.ContractId)
+                .Include(c => c.ContractDetails)
+                .FirstOrDefaultAsync();
+
             if (_contract == null)
             {
                 return false;
             }
 
             _contract.CreateAt = contract.CreatedDate;
-            _contract.SignedAt = contract.SignedAt;
             _contract.CustomerId = contract.CustomerId;
             _contract.ContractDetails = contract.ContractDetails.Select(cd =>
             {
@@ -104,7 +107,6 @@ namespace KhangNghi_BE.Services.Services
 
                 return detail;
             }).ToList();
-
 
             return await _context.SaveChangesAsync() > 0;
         }
