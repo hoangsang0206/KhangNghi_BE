@@ -16,46 +16,23 @@ namespace KhangNghi_BE.Services.Services
             return await _context.Contracts
                 .FilterBy(filterBy)
                 .SortBy(sortBy)
+                .SelectContract()
                 .ToPagedListAsync(page, pageSize);
+        }
+
+        public async Task<IEnumerable<Contract>> GetByCustomerAsync(string customerId)
+        {
+            return await _context.Contracts
+                .Where(c => c.CustomerId == customerId)
+                .SelectContract()
+                .ToListAsync();
         }
 
         public async Task<Contract?> GetByIdAsync(string id)
         {
             return await _context.Contracts
                 .Where(c => c.ContractId == id)
-                .Select(c => new Contract
-                {
-                    ContractId = c.ContractId,
-                    CreateAt = c.CreateAt,
-                    CustomerId = c.CustomerId,
-                    SignedAt = c.SignedAt,
-                    FileUrl = c.FileUrl,
-                    CategoryId = c.CategoryId,
-                    CompletedAt = c.CompletedAt,
-                    InvoiceId = c.InvoiceId,
-                    ContractDetails = c.ContractDetails.Select(cd => new ContractDetail
-                    {
-                        ProductId = cd.ProductId,
-                        ServiceId = cd.ServiceId,
-                        Quantity = cd.Quantity,
-                        UnitPrice = cd.UnitPrice
-                    }).ToList(),
-                    Customer = new Customer
-                    {
-                        CustomerId = c.Customer.CustomerId,
-                        FullName = c.Customer.FullName,
-                        PhoneNumber = c.Customer.PhoneNumber,
-                        Email = c.Customer.Email,
-                        AddressId = c.Customer.AddressId,
-                        Address = new Address
-                        {
-                            Street = c.Customer.Address.Street,
-                            Ward = c.Customer.Address.Ward,
-                            District = c.Customer.Address.District,
-                            City = c.Customer.Address.City
-                        }
-                    },
-                })
+                .SelectContract()
                 .FirstOrDefaultAsync();
         }
 

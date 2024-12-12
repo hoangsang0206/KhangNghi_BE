@@ -6,6 +6,7 @@ namespace KhangNghi_BE.Services
     public interface IContractService
     {
         Task<PagedList<Contract>> GetAsync(string? sortBy, string filterBy, int page, int pageSize);
+        Task<IEnumerable<Contract>> GetByCustomerAsync(string customerId);
         Task<Contract?> GetByIdAsync(string id);
 
         Task<bool> CreateAsync(ContractVM contract, string fileUrl);

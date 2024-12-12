@@ -38,6 +38,19 @@ namespace KhangNghi_BE.Controllers
             });
         }
 
+        [HttpGet("by-customer")]
+        [AdminAuthorize(Code = Functions.ViewContracts)]
+        public async Task<IActionResult> GetCustomerContracts(string customerId)
+        {
+            var result = await _contractService.GetByCustomerAsync(customerId);
+
+            return Ok(new ApiResponse 
+            {
+                Success = true,
+                Data= result
+            });
+        }
+
         [HttpGet("{id}")]
         [AdminAuthorize(Code = Functions.ViewContracts)]
         public async Task<IActionResult> GetById(string id)
