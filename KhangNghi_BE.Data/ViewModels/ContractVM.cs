@@ -20,9 +20,9 @@ namespace KhangNghi_BE.Data.ViewModels
 
         public class ContractDetailVM
         {
-            public string ProductId { get; set; } = null!;
+            public string? ProductId { get; set; } = null!;
 
-            public string ServiceId { get; set; } = null!;
+            public string? ServiceId { get; set; } = null!;
 
             public int Quantity { get; set; }
 

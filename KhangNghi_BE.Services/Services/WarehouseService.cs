@@ -237,6 +237,33 @@ namespace KhangNghi_BE.Services.Services
             .ToPagedListAsync(page, pageSize);
         }
 
+        public async Task<IEnumerable<StockExit>> GetByContractAsync(string contractId)
+        {
+            return await _context.StockExits
+                .Where(s => s.ContractId == contractId)
+                .Select(s => new StockExit
+                {
+                    ExitId = s.ExitId,
+                    ExitDate = s.ExitDate,
+                    Note = s.Note,
+                    TotalAmout = s.TotalAmout,
+                    ContractId = s.ContractId,
+                    Warehouse = new Warehouse
+                    {
+                        WarehouseId = s.Warehouse.WarehouseId,
+                        WarehouseName = s.Warehouse.WarehouseName,
+                    },
+                    StockExitDetails = s.StockExitDetails.Select(d => new StockExitDetail
+                    {
+                        ProductId = d.ProductId,
+                        Quantity = d.Quantity,
+                        UnitPrice = d.UnitPrice,
+                    }).ToList()
+                })
+                .OrderByDescending(s => s.ExitDate)
+                .ToListAsync();
+        }
+
         public async Task<StockExit?> GetExportSlipByIdAsync(string id)
         {
             return await _context.StockExits

@@ -2,6 +2,7 @@
 using KhangNghi_BE.Data.ViewModels;
 using KhangNghi_BE.Services.Utils;
 using Microsoft.EntityFrameworkCore;
+using static KhangNghi_BE.Data.ViewModels.ContractVM;
 
 namespace KhangNghi_BE.Services.Services
 {
@@ -11,7 +12,7 @@ namespace KhangNghi_BE.Services.Services
         
         public ContractService(KhangNghiContext context) => _context = context;
 
-        public async Task<PagedList<Contract>> GetAsync(string? sortBy, string filterBy, int page, int pageSize)
+        public async Task<PagedList<Contract>> GetAsync(string? sortBy, string? filterBy, int page, int pageSize)
         {
             return await _context.Contracts
                 .FilterBy(filterBy)
@@ -80,9 +81,32 @@ namespace KhangNghi_BE.Services.Services
                 return false;
             }
 
-            // Update necessary fields here
+            _contract.CreateAt = contract.CreatedDate;
+            _contract.SignedAt = contract.SignedAt;
+            _contract.CustomerId = contract.CustomerId;
+            _contract.ContractDetails = contract.ContractDetails.Select(cd =>
+            {
+                ContractDetail detail = new ContractDetail
+                {
+                    UnitPrice = cd.UnitPrice,
+                    Quantity = cd.Quantity
+                };
 
-            return false;
+                if (cd.ServiceId != null)
+                {
+                    detail.ServiceId = cd.ServiceId;
+                    detail.Quantity = 1;
+                }
+                else
+                {
+                    detail.ProductId = cd.ProductId;
+                }
+
+                return detail;
+            }).ToList();
+
+
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeleteAsync(string id)
