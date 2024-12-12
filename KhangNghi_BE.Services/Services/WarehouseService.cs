@@ -129,6 +129,7 @@ namespace KhangNghi_BE.Services.Services
                     UnitPrice = d.UnitPrice,
                 }).ToList()
             })
+            .OrderByDescending(s => s.EntryDate)
             .ToPagedListAsync(page, pageSize);
         }
 
@@ -172,7 +173,119 @@ namespace KhangNghi_BE.Services.Services
         public async Task<bool> CreateImportSlipAsync(StockEntry slip)
         {
             await _context.StockEntries.AddAsync(slip);
-            return await _context.SaveChangesAsync() > 0;
+            bool result =  await _context.SaveChangesAsync() > 0;
+
+            if (result)
+            {
+                foreach (var detail in slip.StockEntryDetails)
+                {
+                    var wProduct = await _context.ProductsInWarehouses
+                        .Where(p => p.ProductId == detail.ProductId && p.WarehouseId == slip.WarehouseId)
+                        .FirstOrDefaultAsync();
+
+                    if (wProduct != null)
+                    {
+                        wProduct.Quantity += detail.Quantity;
+                    }
+                    else
+                    {
+                        await _context.ProductsInWarehouses.AddAsync(new ProductsInWarehouse
+                        {
+                            ProductId = detail.ProductId,
+                            WarehouseId = slip.WarehouseId,
+                            Quantity = detail.Quantity,
+                        });
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return result;
+        }
+
+        #endregion
+
+        #region Warehouse Export
+
+        public async Task<PagedList<StockExit>> GetExportSlipsAsync(string? warehouseId, string? sortBy, int page, int pageSize)
+        {
+            IQueryable<StockExit> query = warehouseId != null
+                ? _context.StockExits
+                : _context.StockExits.Where(s => s.WarehouseId == warehouseId);
+
+            return await query.Select(s => new StockExit
+            {
+                ExitId = s.ExitId,
+                ExitDate = s.ExitDate,
+                Note = s.Note,
+                TotalAmout = s.TotalAmout,
+                ContractId = s.ContractId,
+                Warehouse = new Warehouse
+                {
+                    WarehouseId = s.Warehouse.WarehouseId,
+                    WarehouseName = s.Warehouse.WarehouseName,
+                },
+                StockExitDetails = s.StockExitDetails.Select(d => new StockExitDetail
+                {
+                    ProductId = d.ProductId,
+                    Quantity = d.Quantity,
+                    UnitPrice = d.UnitPrice,
+                }).ToList()
+            })
+            .OrderByDescending(s => s.ExitDate)
+            .ToPagedListAsync(page, pageSize);
+        }
+
+        public async Task<StockExit?> GetExportSlipByIdAsync(string id)
+        {
+            return await _context.StockExits
+                .Where(s => s.ExitId == id)
+                .Select(s => new StockExit
+                {
+                    ExitId = s.ExitId,
+                    ExitDate = s.ExitDate,
+                    Note = s.Note,
+                    TotalAmout = s.TotalAmout,
+                    ContractId = s.ContractId,
+                    Warehouse = new Warehouse
+                    {
+                        WarehouseId = s.Warehouse.WarehouseId,
+                        WarehouseName = s.Warehouse.WarehouseName,
+                    },
+                    StockExitDetails = s.StockExitDetails.Select(d => new StockExitDetail
+                    {
+                        ProductId = d.ProductId,
+                        Quantity = d.Quantity,
+                        UnitPrice = d.UnitPrice,
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> CreateExportSlipAsync(StockExit slip)
+        {
+            await _context.StockExits.AddAsync(slip);
+            bool result = await _context.SaveChangesAsync() > 0;
+
+            if (result)
+            {
+                foreach (var detail in slip.StockExitDetails)
+                {
+                    var wProduct = await _context.ProductsInWarehouses
+                        .Where(p => p.ProductId == detail.ProductId && p.WarehouseId == slip.WarehouseId)
+                        .FirstOrDefaultAsync();
+
+                    if (wProduct != null)
+                    {
+                        wProduct.Quantity -= detail.Quantity;
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return result;
         }
 
         #endregion
