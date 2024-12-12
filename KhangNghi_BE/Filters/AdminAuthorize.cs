@@ -13,7 +13,7 @@ namespace KhangNghi_BE.Filters
         {
             if (!context.HttpContext.User.IsInRole("admin"))
             {
-                context.Result = new UnauthorizedResult();
+               context.Result = new UnauthorizedResult();
                 return;
             }
 

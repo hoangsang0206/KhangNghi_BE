@@ -31,7 +31,7 @@ namespace KhangNghi_BE.Controllers
         }
 
         [HttpGet]
-        [AdminAuthorize(Code = Functions.ViewClients)]
+       // [AdminAuthorize(Code = Functions.ViewClients)]
         public async Task<IActionResult> GetCustomers(string? sortBy, string? filterBy, int page = 1)
         {
             PagedList<Customer> customers = await _customerService.GetAsync(sortBy, filterBy, page, _pageSize);
