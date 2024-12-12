@@ -5,7 +5,6 @@ using KhangNghi_BE.Filters;
 using KhangNghi_BE.Services;
 using KhangNghi_BE.Utils;
 using Microsoft.AspNetCore.Mvc;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace KhangNghi_BE.Controllers
 {

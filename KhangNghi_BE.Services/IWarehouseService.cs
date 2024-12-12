@@ -28,7 +28,7 @@ namespace KhangNghi_BE.Services
         #region Warehouse Export
 
         Task<PagedList<StockExit>> GetExportSlipsAsync(string? warehouseId, string? sortBy, int page, int pageSize);
-        Task<StockEntry?> GetExportSlipByIdAsync(string id);
+        Task<StockExit?> GetExportSlipByIdAsync(string id);
         Task<bool> CreateExportSlipAsync(StockExit slip);
 
         #endregion
