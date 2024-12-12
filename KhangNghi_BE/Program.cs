@@ -72,6 +72,7 @@ builder.Services.AddScoped<IVNPayService, VNPayService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IEmployeePositionService, EmployeePositionService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 var app = builder.Build();
 
