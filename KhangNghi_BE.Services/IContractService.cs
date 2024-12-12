@@ -9,7 +9,7 @@ namespace KhangNghi_BE.Services
         Task<IEnumerable<Contract>> GetByCustomerAsync(string customerId);
         Task<Contract?> GetByIdAsync(string id);
 
-        Task<bool> CreateAsync(ContractVM contract, string fileUrl);
+        Task<bool> CreateAsync(ContractVM contract);
         Task<bool> UpdateAsync(ContractVM contract);
         Task<bool> DeleteAsync(string id);
 

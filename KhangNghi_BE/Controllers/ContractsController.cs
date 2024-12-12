@@ -74,7 +74,7 @@ namespace KhangNghi_BE.Controllers
 
         [HttpPost("create")]
         [AdminAuthorize(Code = Functions.CreateContract)]
-        public async Task<IActionResult> Create([FromForm] ContractVM contract, IFormFile file)
+        public async Task<IActionResult> Create([FromBody] ContractVM contract)
         {
             if(!ModelState.IsValid)
             {
@@ -86,13 +86,7 @@ namespace KhangNghi_BE.Controllers
                 });
             }
 
-            string fileName = contract.ContractId
-                        + Path.GetExtension(file.FileName);
-            string uploadPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), _rootFolder, _docsFolder));
-
-            bool uploadResult = await FileUtils.UploadFileAsync(file, uploadPath, fileName);
-
-            bool result = await _contractService.CreateAsync(contract, $"/{_rootFolder}/{_docsFolder}/{fileName}");
+            bool result = await _contractService.CreateAsync(contract);
             ApiResponse response = new ApiResponse
             {
                 Success = result,

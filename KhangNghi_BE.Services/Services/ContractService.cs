@@ -36,15 +36,15 @@ namespace KhangNghi_BE.Services.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<bool> CreateAsync(ContractVM contract, string fileUrl)
+        public async Task<bool> CreateAsync(ContractVM contract)
         {
             Contract _contract = new Contract
             {
                 ContractId = contract.ContractId,
-                CreateAt = DateTime.Now,
+                CreateAt = contract.CreatedDate == null ? DateTime.Now : contract.CreatedDate,
                 CustomerId = contract.CustomerId,
                 SignedAt = contract.SignedAt,
-                FileUrl = fileUrl,
+                FileUrl = contract.ContractId,
 
                 ContractDetails = contract.ContractDetails.Select(cd =>
                 {
@@ -57,6 +57,7 @@ namespace KhangNghi_BE.Services.Services
                     if (cd.ServiceId != null)
                     {
                         detail.ServiceId = cd.ServiceId;
+                        detail.Quantity = 1;
                     } 
                     else
                     {

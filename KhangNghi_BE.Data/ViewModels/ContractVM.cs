@@ -8,9 +8,9 @@ namespace KhangNghi_BE.Data.ViewModels
         [MaxLength(150, ErrorMessage = "Mã hợp đồng tối đa 150 ký tự")]
         public string ContractId { get; set; } = null!;
 
-        public DateTime? SignedAt { get; set; }
+        public DateTime? CreatedDate { get; set; }
 
-        public string? CategoryId { get; set; }
+        public DateTime? SignedAt { get; set; }
 
         [Required(ErrorMessage = "Mã khách hàng không được để trống")]
         public string CustomerId { get; set; } = null!;
