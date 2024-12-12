@@ -27,12 +27,12 @@ namespace KhangNghi_BE.Controllers
         }
 
         [HttpGet("date-range")]
-        public IActionResult GetReport(DateTime fromDate, DateTime? toDate)
+        public IActionResult GetReport(DateTime? fromDate, DateTime? toDate)
         {
             return Ok(new ApiResponse
             {
                 Success = true,
-                Data = _reportService.GetReport(fromDate, toDate ?? DateTime.Now)
+                Data = _reportService.GetReport(fromDate ?? DateTime.Now, toDate ?? DateTime.Now)
             });
         }
     }

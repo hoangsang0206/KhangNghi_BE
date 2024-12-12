@@ -38,10 +38,14 @@ namespace KhangNghi_BE.Services.Services
             {
                 var newCustomers = _context.Customers
                     .Count(c => c.MemberSince.HasValue
+                        && c.MemberSince.Value.Date >= fromDate.Date
+                        && c.MemberSince.Value.Date <= toDate.Date
                         && c.MemberSince.Value.Year == m.Year && c.MemberSince.Value.Month == m.Month);
 
                 var contracts = _context.Contracts
                     .Where(c => c.CreateAt.HasValue
+                        && c.CreateAt.Value.Date >= fromDate.Date
+                        && c.CreateAt.Value.Date <= toDate.Date
                         && c.CreateAt.Value.Year == m.Year && c.CreateAt.Value.Month == m.Month)
                     .Include(c => c.ContractDetails)
                     .Include(c => c.Invoice)
