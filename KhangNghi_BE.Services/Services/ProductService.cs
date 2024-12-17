@@ -38,7 +38,7 @@ namespace KhangNghi_BE.Services.Services
         public async Task<PagedList<Product>> GetByWarehouseAsync(string warehouseId, string? sortBy, int page, int pageSize)
         {
             return await _context.Products
-                .IncludePromotions()
+                .IncludePromotions(warehouseId)
                 .Where(p => p.ProductsInWarehouses.Any(p => p.WarehouseId == warehouseId))
                 .SortBy(sortBy)
                 .ToPagedListAsync(page, pageSize);

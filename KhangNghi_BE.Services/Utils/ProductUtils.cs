@@ -130,5 +130,57 @@ namespace KhangNghi_BE.Services.Utils
 
             return products;
         }
+
+        public static IQueryable<Product> IncludePromotions(this IQueryable<Product> products, string warehouseId)
+        {
+            products = products
+                .Select(p => new Product
+                {
+                    ProductId = p.ProductId,
+                    ProductName = p.ProductName,
+                    OriginalPrice = p.OriginalPrice,
+                    Price = p.Price,
+                    ShortDescription = p.ShortDescription,
+                    Description = p.Description,
+                    CalculationUnit = p.CalculationUnit,
+                    Origin = p.Origin,
+                    Warranty = p.Warranty,
+                    IsActive = p.IsActive,
+                    ProductImages = p.ProductImages
+                        .Select(i => new ProductImage
+                        {
+                            Id = i.Id,
+                            ImageUrl = i.ImageUrl
+                        }).ToList(),
+                    Catalogs = p.Catalogs
+                        .Select(c => new ProductCatalog
+                        {
+                            CatalogId = c.CatalogId,
+                            CatalogName = c.CatalogName
+                        }).ToList(),
+                    ProductsInWarehouses = p.ProductsInWarehouses
+                        .Where(w => w.WarehouseId == warehouseId)
+                        .Select(w => new ProductsInWarehouse
+                        {
+                            WarehouseId = w.WarehouseId,
+                            Quantity = w.Quantity
+                        }).ToList(),
+                    Promotions = p.Promotions.Where(p => p.IsActive == true)
+                        .Select(p => new Promotion
+                        {
+                            PromotionId = p.PromotionId,
+                            PromotionName = p.PromotionName,
+                            PromotionType = p.PromotionType,
+                            DiscountAmount = p.DiscountAmount,
+                            MaxDiscountAmount = p.MaxDiscountAmount,
+                            StartDate = p.StartDate,
+                            EndDate = p.EndDate,
+                            IsActive = p.IsActive
+                        }).ToList()
+                        .ToList()
+                });
+
+            return products;
+        }
     }
 }
