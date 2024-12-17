@@ -94,9 +94,10 @@ namespace KhangNghi_BE.Controllers
 
         #region Authorized
 
+        [HttpGet("by-warehouse")]
         public async Task<IActionResult> GetByWarehouse(string warehouseId, int page = 1)
         {
-            var products = _productService.GetByWarehouseAsync(warehouseId, null, page, _pageSize);
+            var products = await _productService.GetByWarehouseAsync(warehouseId, null, page, _pageSize);
 
             return Ok(new ApiResponse
             {
