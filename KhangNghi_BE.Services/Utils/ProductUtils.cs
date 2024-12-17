@@ -107,6 +107,12 @@ namespace KhangNghi_BE.Services.Utils
                             CatalogId = c.CatalogId,
                             CatalogName = c.CatalogName
                         }).ToList(),
+                    ProductsInWarehouses = p.ProductsInWarehouses
+                        .Select(w => new ProductsInWarehouse
+                        {
+                            WarehouseId = w.WarehouseId,
+                            Quantity = w.Quantity
+                        }).ToList(),
                     Promotions = p.Promotions.Where(p => p.IsActive == true)
                         .Select(p => new Promotion
                         {
