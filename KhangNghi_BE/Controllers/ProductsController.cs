@@ -94,6 +94,17 @@ namespace KhangNghi_BE.Controllers
 
         #region Authorized
 
+        public async Task<IActionResult> GetByWarehouse(string warehouseId, int page = 1)
+        {
+            var products = _productService.GetByWarehouseAsync(warehouseId, null, page, _pageSize);
+
+            return Ok(new ApiResponse
+            {
+                Success = true,
+                Data = products
+            });
+        }
+
         [HttpPost("create")]
         [AdminAuthorize(Code = Functions.CreateProduct)]
         public async Task<IActionResult> CreateProduct([FromBody] ProductVM product)

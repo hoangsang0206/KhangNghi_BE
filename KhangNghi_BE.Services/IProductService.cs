@@ -7,6 +7,7 @@ namespace KhangNghi_BE.Services
     {
         Task<IEnumerable<Product>> GetAsync(string? sortBy);
         Task<PagedList<Product>> GetAsync(string? sortBy, int page, int pageSize);
+        Task<PagedList<Product>> GetByWarehouseAsync(string warehouseId, string? sortBy, int page, int pageSize);
         Task<PagedList<Product>> GetByCatalogAsync(string? sortBy, string catalogId, int page, int pageSize);
         Task<PagedList<Product>> GetByNameAsync(string? sortBy, string search, int page, int pageSize);
         Task<Product?> GetByIdAsync(string id);

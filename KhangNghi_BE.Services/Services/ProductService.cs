@@ -35,6 +35,15 @@ namespace KhangNghi_BE.Services.Services
                 .ToPagedListAsync(page, pageSize);
         }
 
+        public async Task<PagedList<Product>> GetByWarehouseAsync(string warehouseId, string? sortBy, int page, int pageSize)
+        {
+            return await _context.Products
+                .IncludePromotions()
+                .Where(p => p.ProductsInWarehouses.Any(p => p.WarehouseId == warehouseId))
+                .SortBy(sortBy)
+                .ToPagedListAsync(page, pageSize);
+        }
+
         public Task<PagedList<Product>> GetByCatalogAsync(string? sortBy, string catalogId, int page, int pageSize)
         {
             return _context.Products
