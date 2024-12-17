@@ -97,7 +97,7 @@ namespace KhangNghi_BE.Controllers
                 });
             }
 
-            string id = DateTime.Now.ToString() + RandomUtils.GenerateRandomString(8).ToUpper();
+            string id = DateTime.Now.ToString("yyyyMMdd") + RandomUtils.GenerateRandomString(8).ToUpper();
 
             var result = await _employeeService.CreateAsync(employee, id);
 
