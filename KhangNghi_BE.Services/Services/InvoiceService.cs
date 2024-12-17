@@ -51,7 +51,8 @@ namespace KhangNghi_BE.Services.Services
             {
                 InvoiceId = invoiceId,
                 ContractId = invoice.ContractId,
-                EmployeeId = invoice.EmployeeId
+                EmployeeId = invoice.EmployeeId,
+                TaxPercent = invoice.TaxPercent
             };
 
             IEnumerable<ContractDetail> cDetails = await _context.ContractDetails
@@ -68,7 +69,7 @@ namespace KhangNghi_BE.Services.Services
                 _invoice.SubTotal += detail.Quantity * detail.UnitPrice;
             }
 
-            _invoice.TotalAmout = _invoice.SubTotal;
+            _invoice.TotalAmout = _invoice.SubTotal + (_invoice.SubTotal * (decimal)_invoice.TaxPercent);
 
             if(invoice.PromotionIds != null)
             {
